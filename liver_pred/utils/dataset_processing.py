@@ -12,7 +12,9 @@ data_dir = Path(__file__).parent.parent.parent.absolute() / "data"
 sql_query_dir = utils_dir / "SQL queries"
 
 ### Setup postrges connection
-engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost:5432/mimic4")
+pg_engine = create_engine(
+    "postgresql+psycopg2://postgres:postgres@localhost:5432/mimic4"
+)
 
 
 def run_sql_from_txt(file_name, engine):
@@ -28,7 +30,7 @@ def run_sql_from_txt(file_name, engine):
 
     with engine.connect() as connection:
         for statement in statements:
-            result = connection.execute(text(statement))
+            connection.execute(text(statement))
 
 
 def load_sql_from_text(file_name, engine, **kwargs):
@@ -44,22 +46,26 @@ def load_sql_from_text(file_name, engine, **kwargs):
     :rtype: Pandas DataFrame
     """
     with open(sql_query_dir / file_name) as file:
-        query = file.read().replace("\n", " ")
+        query = file.read().replace("\n", " ").replace("%", "%%")
 
     results = pd.read_sql_query(query, engine, **kwargs)
     return results
 
 
+x = "liver_cancer_patients.txt"
+print(sql_query_dir / x)
+
+
 ### Load Cases from pgAdmin
-cases = load_sql_from_text("liver_cancer_patients.txt", engine=engine)
+cases = load_sql_from_text("liver_cancer_patients.txt", engine=pg_engine)
 
 ### Load controls from pgAdmin
-controls = load_sql_from_text("non_liver_cancer_patients.txt", engine=engine)
+controls = load_sql_from_text("non_liver_cancer_patients.txt", engine=pg_engine)
 
 ### Load characteristics of MIMICIV cohort
-run_sql_from_txt("characteristics.txt", engine)
+run_sql_from_txt("characteristics.txt", pg_engine)
 characteristics = pd.read_sql_query(
-    "Select * From mimiciv_derived.characteristics", engine
+    "Select * From mimiciv_derived.characteristics", pg_engine
 )
 print("Done")
 ### Match cohort
