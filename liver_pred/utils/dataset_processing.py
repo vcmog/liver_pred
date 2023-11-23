@@ -21,7 +21,7 @@ def run_sql_from_txt(file_name, engine):
     :param file_name: Title of SQL .txt file name stored in dir 'SQL queries'
     :type file_name: str
     :param engine: Established SQLalchemy engine to connect to relevant database
-    :type engine: SQLaclhemy Engine()
+    :type engine: SQLalchemy Engine()
     """
     with open(sql_query_dir / file_name) as file:
         statements = file.read().replace("\n", " ").split(";")
@@ -31,21 +31,36 @@ def run_sql_from_txt(file_name, engine):
             result = connection.execute(text(statement))
 
 
-def load_sql_from_text(file_name, engine, col_dtypes=None):
+def load_sql_from_text(file_name, engine, **kwargs):
+    """Run SQL queries stored at .txt files using specified SQL engine and return the relevant data.
+
+    :param file_name: Title of SQL .txt file name stored in dir 'SQL queries'
+    :type file_name: str
+    :param engine: Established SQLalchemy engine to connect to relevant database
+    :type engine: SQLalchemy Engine()
+    :param col_dtypes: Dict of datatypes for returned dataframe columns
+    :type col_dtypes: dict
+    :return: DataFrame of return SQL queries
+    :rtype: Pandas DataFrame
+    """
     with open(sql_query_dir / file_name) as file:
         query = file.read().replace("\n", " ")
 
-    results = pd.read_sql_query(query, engine, dtype=col_dtypes)
+    if col_dtypes
+    results = pd.read_sql_query(query, engine, **kwargs)
     return results
 
 
 ### Load Cases from pgAdmin
-
+cases = load_sql_from_text("liver_cancer_patients.txt", engine=engine)
 
 ### Load controls from pgAdmin
-
+controls = load_sql_from_text("non_liver_cancer_patients.txt", engine=engine)
 
 ### Load characteristics of MIMICIV cohort
-
-
+run_sql_from_txt("characteristics.txt", engine)
+characteristics = pd.read_sql_query(
+    "Select * From mimiciv_derived.characteristics", engine
+)
+print("Done")
 ### Match cohort
