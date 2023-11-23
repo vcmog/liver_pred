@@ -46,7 +46,6 @@ def load_sql_from_text(file_name, engine, **kwargs):
     with open(sql_query_dir / file_name) as file:
         query = file.read().replace("\n", " ")
 
-    if col_dtypes
     results = pd.read_sql_query(query, engine, **kwargs)
     return results
 
