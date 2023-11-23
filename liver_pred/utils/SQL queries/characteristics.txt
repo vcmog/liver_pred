@@ -1,0 +1,12 @@
+DROP TABLE IF EXISTS mimiciv_derived.characteristics;
+CREATE TABLE mimiciv_derived.characteristics AS
+
+SELECT admissions.subject_id, admissions.hadm_id,
+	admissions.admission_type, pat.gender, admissions.race,
+ EXTRACT('EPOCH' FROM admissions.admittime - 
+to_date(to_char(pat.anchor_year-pat.anchor_age,'9999'), 'YYYY'))/ 60.0 / 60.0 / 24.0 / 365.242
+	as age_at_admission,
+	RANK() OVER (PARTITION BY admissions.subject_id ORDER BY admittime asc)
+FROM mimiciv_hosp.admissions 
+INNER JOIN mimiciv_hosp.patients pat
+    ON admissions.subject_id = pat.subject_id
