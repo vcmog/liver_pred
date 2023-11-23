@@ -52,10 +52,6 @@ def load_sql_from_text(file_name, engine, **kwargs):
     return results
 
 
-x = "liver_cancer_patients.txt"
-print(sql_query_dir / x)
-
-
 ### Load Cases from pgAdmin
 cases = load_sql_from_text("liver_cancer_patients.txt", engine=pg_engine)
 
@@ -67,5 +63,5 @@ run_sql_from_txt("characteristics.txt", pg_engine)
 characteristics = pd.read_sql_query(
     "Select * From mimiciv_derived.characteristics", pg_engine
 )
-print("Done")
+
 ### Match cohort
