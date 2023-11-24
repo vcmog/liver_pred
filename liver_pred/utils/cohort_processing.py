@@ -81,10 +81,14 @@ characteristics = (
     .reset_index(drop=True)
 )
 
+## Add outcome column to characteristics
+case_ids = cases["subject_id"]
+characteristics["outcome"] = characteristics["subject_id"].isin(case_ids).astype(int)
+
 
 ## Match cases and cohorts to their characteristics
-case = characteristics[characteristics["outcome"] == 1]
-control = characteristics[characteristics["outcome"] == 0]
+case_characteristics = characteristics[characteristics["outcome"] == 1]
+control_characteristics = characteristics[characteristics["outcome"] == 0]
 
 
 ## Fit initial
