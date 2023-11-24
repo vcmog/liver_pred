@@ -67,4 +67,9 @@ characteristics = pd.read_sql_query(
 )
 characteristics.to_csv(data_dir / "input/characteristics.csv")
 
+
 ### Match cohort
+
+## Match cases and cohorts to their characteristics
+
+## Fit initial
