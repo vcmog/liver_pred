@@ -13,6 +13,9 @@ utils_dir = Path(__file__).parent.absolute()
 data_dir = Path(__file__).parent.parent.parent.absolute() / "data"
 sql_query_dir = utils_dir / "SQL queries"
 
+
+###### Load data ######
+
 ### Setup postrges connection
 pg_engine = create_engine(
     "postgresql+psycopg2://postgres:postgres@localhost:5432/mimic4"
@@ -68,8 +71,20 @@ characteristics = pd.read_sql_query(
 characteristics.to_csv(data_dir / "input/characteristics.csv")
 
 
-### Match cohort
+###### Match cohort ######
+
+## Select a random admission for each subject_id - otherwise can't work out with pymatch how to ensure the same patient isn't picked loads of times (could do this by scratch)
+
+characteristics = (
+    characteristics.groupby("subject_id")
+    .apply(lambda x: x.sample(1))
+    .reset_index(drop=True)
+)
+
 
 ## Match cases and cohorts to their characteristics
+case = characteristics[characteristics["outcome"] == 1]
+control = characteristics[characteristics["outcome"] == 0]
+
 
 ## Fit initial
