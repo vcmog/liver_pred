@@ -5,12 +5,15 @@ from sqlalchemy import create_engine, text
 
 from pathlib import Path
 
-import pymatch
 
+from sklearn.linear_model import LogisticRegression
+
+import seaborn as sns
 
 ### Set pathnames
 utils_dir = Path(__file__).parent.absolute()
-data_dir = Path(__file__).parent.parent.parent.absolute() / "data"
+project_dir = utils_dir.parent.parent.absolute()
+data_dir = project_dir / "data"
 sql_query_dir = utils_dir / "SQL queries"
 
 
@@ -90,5 +93,21 @@ characteristics["outcome"] = characteristics["subject_id"].isin(case_ids).astype
 case_characteristics = characteristics[characteristics["outcome"] == 1]
 control_characteristics = characteristics[characteristics["outcome"] == 0]
 
+combined_df = pd.concat(case_characteristics, control_characteristics)
+## Fit initial model
+controlled_characteristics = combined_df[
+    "admission_type", "gender", "race", "age_at_admission", "rank"
+]
+outcome = combined_df["outcome"]
 
-## Fit initial
+lr = LogisticRegression()
+lr.fit(controlled_characteristics, outcome)
+
+pred_binary = lr.predict(controlled_characteristics)
+pred_prob = lr.predict_proba(controlled_characteristics)
+
+combined_df["propensity"] = pred_prob[:, 1]
+
+pre_match_plot = sns.histplot(data=combined_df, x="ps", hue="outcome")
+fig = pre_match_plot.get_figure()
+fig.savefig(project_dir / "outputs/figures/cohort_matching/pre_match_scores")
