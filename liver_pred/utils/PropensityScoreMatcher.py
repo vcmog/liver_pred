@@ -3,6 +3,8 @@ import numpy as np
 from statsmodels.genmod.generalized_linear_model import GLM
 import statsmodels.api as sm
 from functions import progress
+import seaborn as sns
+import matplotlib as plt
 
 
 class PropensityScoreMatcher:
@@ -76,6 +78,22 @@ class PropensityScoreMatcher:
             data[data[self.yvar] == self.majority],
         )
         return pd.concat([major.sample(len(minor)), minor], sort=True)
+
+    def plot_scores(self):
+        """
+        Plots the distribution of propensity scores before matching between
+        our test and control groups
+        """
+        assert (
+            "scores" in self.data.columns
+        ), "Propensity scores haven't been calculated, use Matcher.predict_scores()"
+        sns.distplot(self.data[self.data[self.yvar] == 0].scores, label="Control")
+        sns.distplot(self.data[self.data[self.yvar] == 1].scores, label="Test")
+        plt.legend(loc="upper right")
+        plt.xlim((0, 1))
+        plt.title("Propensity Scores Before Matching")
+        plt.ylabel("Percentage (%)")
+        plt.xlabel("Scores")
 
     @staticmethod
     def _scores_to_accuracy(m, X, y):
