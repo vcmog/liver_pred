@@ -1,39 +1,42 @@
 import pandas as pd
 import numpy as np
 
-import psycopg2
+# import psycopg2
 from sqlalchemy import create_engine, text
 
 from pathlib import Path
 
 
-from sklearn.linear_model import LogisticRegression
+# from sklearn.linear_model import LogisticRegression
 
-import seaborn as sns
+# import seaborn as sns
+import matplotlib.pyplot as plt
 
 from PropensityScoreMatcher import PropensityScoreMatcher
 
-### Set pathnames
+# Set pathnames
 utils_dir = Path(__file__).parent.absolute()
 project_dir = utils_dir.parent.parent.absolute()
 data_dir = project_dir / "data"
 sql_query_dir = utils_dir / "SQL queries"
 
 
-###### Load data ######
+## Load data ######
 
-### Setup postrges connection
+## Setup postrges connection
 pg_engine = create_engine(
     "postgresql+psycopg2://postgres:postgres@localhost:5432/mimic4"
 )
 
 
 def run_sql_from_txt(file_name, engine):
-    """Takes a series of SQL statements from a .txt that do not return an output and runs them using the engine or connection specified.
+    """Takes a series of SQL statements from a .txt that do not return an
+     output and runs them using the engine or connection specified.
 
     :param file_name: Title of SQL .txt file name stored in dir 'SQL queries'
     :type file_name: str
-    :param engine: Established SQLalchemy engine to connect to relevant database
+    :param engine: Established SQLalchemy engine to connect to relevant
+    database
     :type engine: SQLalchemy Engine()
     """
     with open(sql_query_dir / file_name) as file:
@@ -45,11 +48,13 @@ def run_sql_from_txt(file_name, engine):
 
 
 def load_sql_from_text(file_name, engine, **kwargs):
-    """Run SQL queries stored at .txt files using specified SQL engine and return the relevant data.
+    """Run SQL queries stored at .txt files using specified SQL engine and
+     return the relevant data.
 
     :param file_name: Title of SQL .txt file name stored in dir 'SQL queries'
     :type file_name: str
-    :param engine: Established SQLalchemy engine to connect to relevant database
+    :param engine: Established SQLalchemy engine to connect to relevant
+    database
     :type engine: SQLalchemy Engine()
     :param col_dtypes: Dict of datatypes for returned dataframe columns
     :type col_dtypes: dict
@@ -91,7 +96,7 @@ else:
 
 
 ## Select a random admission for each subject_id - otherwise can't work out with pymatch how to ensure the same patient isn't picked loads of times (could do this by scratch)
-
+## this is a bad idea - can only do this for controls
 characteristics = (
     characteristics.groupby("subject_id")
     .apply(lambda x: x.sample(1))
@@ -138,3 +143,4 @@ matcher.predict_scores()
 print("Scores predicted")
 matcher.plot_scores()
 print("done")
+plt.show()
