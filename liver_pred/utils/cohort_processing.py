@@ -63,13 +63,13 @@ def load_sql_from_text(file_name, engine, **kwargs):
     return results
 
 
-### Load Cases from pgAdmin - add if file exists?
+### Load Cases
 if Path(data_dir / "input/cases.csv").exists():
     cases = pd.read_csv(data_dir / "input/cases.csv")
 else:
     cases = load_sql_from_text("liver_cancer_patients.txt", engine=pg_engine)
     cases.to_csv(data_dir / "input/cases.csv")
-### Load controls from pgAdmin
+### Load Controls
 if Path(data_dir / "input/controls.csv").exists():
     ccontrols = pd.read_csv(data_dir / "input/controls.csv")
 else:
@@ -126,21 +126,15 @@ matcher = PropensityScoreMatcher(
     combined_df[combined_df["outcome"] == 1],
     combined_df[combined_df["outcome"] == 0],
     yvar="outcome",
+    exclude=["subject_id", "hadm_id"],
 )
 
-# print(matcher.data.head)
+
 matcher.fit_score()
-
-# matcher.predict_scores()
-# lr = LogisticRegression(class_weight="balanced")
-# lr.fit(controlled_characteristics_dummies, outcome)
-
-# pred_binary = lr.predict(controlled_characteristics_dummies)
-# pred_prob = lr.predict_proba(controlled_characteristics_dummies)
-
-# combined_df["propensity"] = pred_prob[:, 1]
-
-# pre_match_plot = sns.histplot(data=combined_df, x="propensity", hue="outcome")
-# fig = pre_match_plot.get_figure()
-# fig.savefig(project_dir / "outputs/figures/cohort_matching/pre_match_scores"
-# int(np.ceil((len(major) / len(minor)) / 10) * 10)
+print("Scores fit")
+print(matcher.data)
+print(matcher.X)
+matcher.predict_scores()
+print("Scores predicted")
+matcher.plot_scores()
+print("done")
