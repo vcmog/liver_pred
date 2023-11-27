@@ -82,7 +82,7 @@ class PropensityScoreMatcher:
         )
         return pd.concat([major.sample(len(minor)), minor], sort=True)
 
-    def plot_scores(self):
+    def plot_scores(self, save_fig=False, save_path=None):
         """
         Plots the distribution of propensity scores before matching between
         our test and control groups
@@ -90,7 +90,7 @@ class PropensityScoreMatcher:
         assert (
             "scores" in self.data.columns
         ), "Propensity scores not yet calculated, use Matcher.predict_scores()"
-        sns.displot(
+        hist = sns.displot(
             self.data, x="scores", hue="outcome", stat="percent", common_norm=False
         )
         # sns.displot(cases.scores, label="Case")
@@ -99,6 +99,11 @@ class PropensityScoreMatcher:
         plt.title("Propensity Scores Before Matching")
         plt.ylabel("Percentage (%)")
         plt.xlabel("Scores")
+
+        if save_fig:
+            assert save_path, "No path provided for figure destination"
+
+            hist.savefig(save_path)
 
     def match(self, threshold=0.001, nmatches=1, method="min", max_rand=10):
         """
@@ -166,7 +171,14 @@ class PropensityScoreMatcher:
         self.matched_data["match_id"] = match_ids
         self.matched_data["record_id"] = self.matched_data.index
 
-    def tune_threshold(self, method, nmatches=1, rng=np.arange(0, 0.001, 0.0001)):
+    def tune_threshold(
+        self,
+        method="random",
+        nmatches=1,
+        rng=np.arange(0, 0.001, 0.0001),
+        save_fig=False,
+        save_path=None,
+    ):
         """
         Matches data over a grid to optimize threshold value and plots results.
 
@@ -188,11 +200,15 @@ class PropensityScoreMatcher:
         for i in rng:
             self.match(method=method, nmatches=nmatches, threshold=i)
             results.append(self.prop_retained())
+        plt.figure()
         plt.plot(rng, results)
         plt.title("Proportion of Data retained for grid of threshold values")
         plt.ylabel("Proportion Retained")
         plt.xlabel("Threshold")
         plt.xticks(rng)
+        if save_fig:
+            assert save_path, "No path provided for figure destination"
+            plt.savefig(save_path)
 
     def prop_retained(self):
         """
