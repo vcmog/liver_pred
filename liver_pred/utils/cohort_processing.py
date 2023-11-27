@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 import psycopg2
 from sqlalchemy import create_engine, text
@@ -9,6 +10,8 @@ from pathlib import Path
 from sklearn.linear_model import LogisticRegression
 
 import seaborn as sns
+
+from PropensityScoreMatcher import PropensityScoreMatcher
 
 ### Set pathnames
 utils_dir = Path(__file__).parent.absolute()
@@ -60,21 +63,32 @@ def load_sql_from_text(file_name, engine, **kwargs):
     return results
 
 
-### Load Cases from pgAdmin
-cases = load_sql_from_text("liver_cancer_patients.txt", engine=pg_engine)
-cases.to_csv(data_dir / "input/cases.csv")
+### Load Cases from pgAdmin - add if file exists?
+if Path(data_dir / "input/cases.csv").exists():
+    cases = pd.read_csv(data_dir / "input/cases.csv")
+else:
+    cases = load_sql_from_text("liver_cancer_patients.txt", engine=pg_engine)
+    cases.to_csv(data_dir / "input/cases.csv")
 ### Load controls from pgAdmin
-controls = load_sql_from_text("non_liver_cancer_patients.txt", engine=pg_engine)
-controls.to_csv(data_dir / "input/controls.csv")
+if Path(data_dir / "input/controls.csv").exists():
+    ccontrols = pd.read_csv(data_dir / "input/controls.csv")
+else:
+    controls = load_sql_from_text("non_liver_cancer_patients.txt", engine=pg_engine)
+    controls.to_csv(data_dir / "input/controls.csv")
+
 ### Load characteristics of MIMICIV cohort
-run_sql_from_txt("characteristics.txt", pg_engine)
-characteristics = pd.read_sql_query(
-    "Select * From mimiciv_derived.characteristics", pg_engine
-)
-characteristics.to_csv(data_dir / "input/characteristics.csv")
+if Path(data_dir / "input/characteristics.csv").exists():
+    characteristics = pd.read_csv(data_dir / "input/characteristics.csv")
+else:
+    run_sql_from_txt("characteristics.txt", pg_engine)
+    characteristics = pd.read_sql_query(
+        "Select * From mimiciv_derived.characteristics", pg_engine
+    )
+    characteristics.to_csv(data_dir / "input/characteristics.csv")
 
 
 ###### Match cohort ######
+
 
 ## Select a random admission for each subject_id - otherwise can't work out with pymatch how to ensure the same patient isn't picked loads of times (could do this by scratch)
 
@@ -93,21 +107,40 @@ characteristics["outcome"] = characteristics["subject_id"].isin(case_ids).astype
 case_characteristics = characteristics[characteristics["outcome"] == 1]
 control_characteristics = characteristics[characteristics["outcome"] == 0]
 
-combined_df = pd.concat(case_characteristics, control_characteristics)
+combined_df = pd.concat([case_characteristics, control_characteristics])
 ## Fit initial model
+
 controlled_characteristics = combined_df[
-    "admission_type", "gender", "race", "age_at_admission", "rank"
+    ["admission_type", "gender", "race", "age_at_admission", "rank"]
 ]
+
+# one-hot-encode categorical variables - admission type, gender, race
+controlled_characteristics_dummies = pd.get_dummies(
+    controlled_characteristics, drop_first=True
+)
+
 outcome = combined_df["outcome"]
 
-lr = LogisticRegression()
-lr.fit(controlled_characteristics, outcome)
 
-pred_binary = lr.predict(controlled_characteristics)
-pred_prob = lr.predict_proba(controlled_characteristics)
+matcher = PropensityScoreMatcher(
+    combined_df[combined_df["outcome"] == 1],
+    combined_df[combined_df["outcome"] == 0],
+    yvar="outcome",
+)
 
-combined_df["propensity"] = pred_prob[:, 1]
+# print(matcher.data.head)
+matcher.fit_score()
 
-pre_match_plot = sns.histplot(data=combined_df, x="ps", hue="outcome")
-fig = pre_match_plot.get_figure()
-fig.savefig(project_dir / "outputs/figures/cohort_matching/pre_match_scores")
+# matcher.predict_scores()
+# lr = LogisticRegression(class_weight="balanced")
+# lr.fit(controlled_characteristics_dummies, outcome)
+
+# pred_binary = lr.predict(controlled_characteristics_dummies)
+# pred_prob = lr.predict_proba(controlled_characteristics_dummies)
+
+# combined_df["propensity"] = pred_prob[:, 1]
+
+# pre_match_plot = sns.histplot(data=combined_df, x="propensity", hue="outcome")
+# fig = pre_match_plot.get_figure()
+# fig.savefig(project_dir / "outputs/figures/cohort_matching/pre_match_scores"
+# int(np.ceil((len(major) / len(minor)) / 10) * 10)
