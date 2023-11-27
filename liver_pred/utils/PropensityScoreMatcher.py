@@ -12,7 +12,8 @@ class PropensityScoreMatcher:
         t = t.dropna(axis=1, how="all")
         c = c.dropna(axis=1, how="all")
         c.index += len(t)  # shift c index to go after t
-        self.data = pd.concat([t, c], axis=0)
+        data = pd.concat([t, c], axis=0)
+        self.data = pd.get_dummies(data, drop_first=True, dtype=int)
         self.yvar = yvar
         self.exclude = exclude + [self.yvar]
 
@@ -21,7 +22,7 @@ class PropensityScoreMatcher:
         self.model_accuracy = []
         self.data[yvar] = self.data[yvar].astype(int)  # binary
         self.xvars = [i for i in self.data.columns if i not in self.exclude]
-        self.X = pd.get_dummies(self.data[self.xvars], drop_first=True)
+        self.X = self.data[self.xvars]
         self.case = self.data[self.data[yvar] == True]
         self.control = self.data[self.data[yvar] == False]
         self.casen = len(self.case)
@@ -50,8 +51,8 @@ class PropensityScoreMatcher:
                 # progress(i + 1, nmodels, prestr="Fitting Models on Balanced Samples")
 
                 df = self.balanced_sample()
-                X = np.asarray(pd.get_dummies(df[self.xvars], drop_first=True))
-                y = np.asarray(df[self.yvar])
+                X = np.asarray(df.drop(self.yvar, axis=1))
+                y = np.asarray(df[self.yvar].to_list(), dtype="float")
 
                 glm = GLM(y, X, family=sm.families.Binomial())
                 res = glm.fit()
@@ -79,4 +80,4 @@ class PropensityScoreMatcher:
     @staticmethod
     def _scores_to_accuracy(m, X, y):
         preds = [[1.0 if i >= 0.5 else 0.0 for i in m.predict(X)]]
-        return (y.to_numpy().T == preds).sum() * 1.0 / len(y)
+        return (y.T == preds).sum() * 1.0 / len(y)
