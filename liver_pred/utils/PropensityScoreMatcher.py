@@ -194,12 +194,16 @@ class PropensityScoreMatcher:
         plt.xlabel("Threshold")
         plt.xticks(rng)
 
-        def prop_retained(self):
+    def prop_retained(self):
         """
         Returns the proportion of data retained after matching
         """
-        return len(self.matched_data[self.matched_data[self.yvar] == self.minority]) * 1.0 / \
-               len(self.data[self.data[self.yvar] == self.minority])    
+
+        return (
+            len(self.matched_data[self.matched_data[self.yvar] == self.minority])
+            * 1.0
+            / len(self.data[self.data[self.yvar] == self.minority])
+        )
 
     @staticmethod
     def _scores_to_accuracy(m, X, y):
