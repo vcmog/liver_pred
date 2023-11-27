@@ -19,7 +19,7 @@ utils_dir = Path(__file__).parent.absolute()
 project_dir = utils_dir.parent.parent.absolute()
 data_dir = project_dir / "data"
 sql_query_dir = utils_dir / "SQL queries"
-
+output_dir = project_dir / "outputs"
 
 ## Load data ######
 
@@ -68,20 +68,20 @@ def load_sql_from_text(file_name, engine, **kwargs):
     return results
 
 
-### Load Cases
+## Load Cases
 if Path(data_dir / "input/cases.csv").exists():
     cases = pd.read_csv(data_dir / "input/cases.csv")
 else:
     cases = load_sql_from_text("liver_cancer_patients.txt", engine=pg_engine)
     cases.to_csv(data_dir / "input/cases.csv")
-### Load Controls
+## Load Controls
 if Path(data_dir / "input/controls.csv").exists():
-    ccontrols = pd.read_csv(data_dir / "input/controls.csv")
+    controls = pd.read_csv(data_dir / "input/controls.csv")
 else:
     controls = load_sql_from_text("non_liver_cancer_patients.txt", engine=pg_engine)
     controls.to_csv(data_dir / "input/controls.csv")
 
-### Load characteristics of MIMICIV cohort
+## Load characteristics of MIMICIV cohort
 if Path(data_dir / "input/characteristics.csv").exists():
     characteristics = pd.read_csv(data_dir / "input/characteristics.csv")
 else:
@@ -92,55 +92,59 @@ else:
     characteristics.to_csv(data_dir / "input/characteristics.csv")
 
 
-###### Match cohort ######
+##### Match cohort ######
 
 
-## Select a random admission for each subject_id - otherwise can't work out with pymatch how to ensure the same patient isn't picked loads of times (could do this by scratch)
-## this is a bad idea - can only do this for controls
-characteristics = (
-    characteristics.groupby("subject_id")
+case_chars = characteristics[characteristics["hadm_id"].isin(cases["hadm_id"])]
+control_chars = characteristics[
+    characteristics["subject_id"].isin(controls["subject_id"])
+]
+# sample random admission for each patient so duplicate patients are included
+control_chars = (
+    control_chars.groupby("subject_id")
     .apply(lambda x: x.sample(1))
     .reset_index(drop=True)
 )
 
+
 ## Add outcome column to characteristics
-case_ids = cases["subject_id"]
-characteristics["outcome"] = characteristics["subject_id"].isin(case_ids).astype(int)
-
-
-## Match cases and cohorts to their characteristics
-case_characteristics = characteristics[characteristics["outcome"] == 1]
-control_characteristics = characteristics[characteristics["outcome"] == 0]
-
-combined_df = pd.concat([case_characteristics, control_characteristics])
-## Fit initial model
-
-controlled_characteristics = combined_df[
-    ["admission_type", "gender", "race", "age_at_admission", "rank"]
-]
-
-# one-hot-encode categorical variables - admission type, gender, race
-controlled_characteristics_dummies = pd.get_dummies(
-    controlled_characteristics, drop_first=True
-)
-
-outcome = combined_df["outcome"]
+case_chars.loc[:, "outcome"] = 1
+control_chars.loc[:, "outcome"] = 0
 
 
 matcher = PropensityScoreMatcher(
-    combined_df[combined_df["outcome"] == 1],
-    combined_df[combined_df["outcome"] == 0],
+    case_chars,
+    control_chars,
     yvar="outcome",
     exclude=["subject_id", "hadm_id"],
 )
 
-
+print("Fitting models...")
 matcher.fit_score()
-print("Scores fit")
-print(matcher.data)
-print(matcher.X)
+print("Predicting scores...")
 matcher.predict_scores()
 print("Scores predicted")
-matcher.plot_scores()
-print("done")
+matcher.plot_scores(
+    save_fig=True, save_path=output_dir / "figures/cohort_matching/pre_match_scores.png"
+)
 plt.show()
+matcher.tune_threshold(
+    save_fig=True, save_path=output_dir / "figures/cohort_matching/threshold_plot.png"
+)
+plt.show()
+matcher.match(nmatches=5)
+
+
+matched_data = matcher.matched_data
+cohort_ids = matched_data[['subject_id', 'hadm_id']]
+cohort_ids.to_csv(data_dir/"interim/matched_cohort_ids.csv")
+
+post_match = PropensityScoreMatcher(
+    matched_data[matched_data['outcome']==1], 
+    matched_data[matched_date['outcome']==0], 
+    yvar = 'outcome',
+    exclude = ['subject_id', 'hadm_id', 'scores', 'match_id', 'record_id'])
+post_match.fit_scores()
+with open(data_dir/"outputs/cohort_matching/report.txt", 'w') as f:
+    f.write(f'Prematching: \n ---------------\ncasen = {matcher.casen} \ncontroln = {matcher.controln} \naccuracy = {matcher.average_accuracy} \n\n\n,
+    Postmatching: \n ---------------\ncasen = {post_match.casen} \ncontroln = {post_match.controln} \naccuracy = {post_match.average_accuracy}'  )
