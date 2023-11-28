@@ -21,9 +21,9 @@ data_dir = project_dir / "data"
 sql_query_dir = utils_dir / "SQL queries"
 output_dir = project_dir / "outputs"
 
-## Load data ######
+# Load data ######
 
-## Setup postrges connection
+# Setup postrges connection
 pg_engine = create_engine(
     "postgresql+psycopg2://postgres:postgres@localhost:5432/mimic4"
 )
@@ -68,20 +68,20 @@ def load_sql_from_text(file_name, engine, **kwargs):
     return results
 
 
-## Load Cases
+# Load Cases
 if Path(data_dir / "input/cases.csv").exists():
     cases = pd.read_csv(data_dir / "input/cases.csv")
 else:
     cases = load_sql_from_text("liver_cancer_patients.txt", engine=pg_engine)
     cases.to_csv(data_dir / "input/cases.csv")
-## Load Controls
+# Load Controls
 if Path(data_dir / "input/controls.csv").exists():
     controls = pd.read_csv(data_dir / "input/controls.csv")
 else:
     controls = load_sql_from_text("non_liver_cancer_patients.txt", engine=pg_engine)
     controls.to_csv(data_dir / "input/controls.csv")
 
-## Load characteristics of MIMICIV cohort
+# Load characteristics of MIMICIV cohort
 if Path(data_dir / "input/characteristics.csv").exists():
     characteristics = pd.read_csv(data_dir / "input/characteristics.csv")
 else:
@@ -92,7 +92,7 @@ else:
     characteristics.to_csv(data_dir / "input/characteristics.csv")
 
 
-##### Match cohort ######
+# Match cohort #
 
 
 case_chars = characteristics[characteristics["hadm_id"].isin(cases["hadm_id"])]
@@ -107,7 +107,7 @@ control_chars = (
 )
 
 
-## Add outcome column to characteristics
+# Add outcome column to characteristics
 case_chars.loc[:, "outcome"] = 1
 control_chars.loc[:, "outcome"] = 0
 
@@ -136,15 +136,22 @@ matcher.match(nmatches=5)
 
 
 matched_data = matcher.matched_data
-cohort_ids = matched_data[['subject_id', 'hadm_id']]
-cohort_ids.to_csv(data_dir/"interim/matched_cohort_ids.csv")
+cohort_ids = matched_data[["subject_id", "hadm_id"]]
+cohort_ids.to_csv(data_dir / "interim/matched_cohort_ids.csv")
 
 post_match = PropensityScoreMatcher(
-    matched_data[matched_data['outcome']==1], 
-    matched_data[matched_date['outcome']==0], 
-    yvar = 'outcome',
-    exclude = ['subject_id', 'hadm_id', 'scores', 'match_id', 'record_id'])
+    matched_data[matched_data["outcome"] == 1],
+    matched_data[matched_data["outcome"] == 0],
+    yvar="outcome",
+    exclude=["subject_id", "hadm_id", "scores", "match_id", "record_id"],
+)
 post_match.fit_scores()
-with open(data_dir/"outputs/cohort_matching/report.txt", 'w') as f:
-    f.write(f'Prematching: \n ---------------\ncasen = {matcher.casen} \ncontroln = {matcher.controln} \naccuracy = {matcher.average_accuracy} \n\n\n,
-    Postmatching: \n ---------------\ncasen = {post_match.casen} \ncontroln = {post_match.controln} \naccuracy = {post_match.average_accuracy}'  )
+with open(data_dir / "outputs/cohort_matching/report.txt", "w") as f:
+    f.write(
+        f"Prematching: \n ---------------\ncasen = {matcher.casen} \
+            \ncontroln = {matcher.controln} \
+            \naccuracy = {matcher.average_accuracy} \n\n\n \
+    Postmatching: \n ---------------\ncasen = {post_match.casen} \
+        \ncontroln = {post_match.controln} \
+        \naccuracy = {post_match.average_accuracy}"
+    )
