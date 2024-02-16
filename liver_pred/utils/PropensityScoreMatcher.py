@@ -102,7 +102,6 @@ class PropensityScoreMatcher:
 
         if save_fig:
             assert save_path, "No path provided for figure destination"
-
             hist.savefig(save_path)
 
     def match(self, threshold=0.001, nmatches=1, method="min", max_rand=10):

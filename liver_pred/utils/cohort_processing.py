@@ -125,18 +125,18 @@ print("Predicting scores...")
 matcher.predict_scores()
 print("Scores predicted")
 matcher.plot_scores(
-    save_fig=True, save_path=output_dir / "figures/cohort_matching/pre_match_scores.png"
+    save_fig=True, save_path=output_dir / "cohort_matching/pre_match_scores.png"
 )
 plt.show()
 matcher.tune_threshold(
-    save_fig=True, save_path=output_dir / "figures/cohort_matching/threshold_plot.png"
+    save_fig=True, save_path=output_dir / "cohort_matching/threshold_plot.png"
 )
 plt.show()
 matcher.match(nmatches=5)
 
 
 matched_data = matcher.matched_data
-cohort_ids = matched_data[["subject_id", "hadm_id"]]
+cohort_ids = matched_data[["subject_id", "hadm_id", "outcome"]]
 cohort_ids.to_csv(data_dir / "interim/matched_cohort_ids.csv")
 
 post_match = PropensityScoreMatcher(
@@ -145,8 +145,8 @@ post_match = PropensityScoreMatcher(
     yvar="outcome",
     exclude=["subject_id", "hadm_id", "scores", "match_id", "record_id"],
 )
-post_match.fit_scores()
-with open(data_dir / "outputs/cohort_matching/report.txt", "w") as f:
+post_match.fit_score()
+with open(output_dir / "cohort_matching/report.txt", "a+") as f:
     f.write(
         f"Prematching: \n ---------------\ncasen = {matcher.casen} \
             \ncontroln = {matcher.controln} \
