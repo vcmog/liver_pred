@@ -1,0 +1,12 @@
+Prematching: 
+ ---------------
+casen = 1360             
+controln = 179373             
+accuracy = 54.3 
+
+
+     Postmatching: 
+ ---------------
+casen = 1360         
+controln = 6800         
+accuracy = 50.0
