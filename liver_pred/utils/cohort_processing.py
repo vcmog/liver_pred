@@ -8,6 +8,8 @@ from pathlib import Path
 
 from functions import run_sql_from_txt, load_sql_from_text
 
+import config
+
 # from sklearn.linear_model import LogisticRegression
 
 # import seaborn as sns
@@ -16,11 +18,11 @@ import matplotlib.pyplot as plt
 from PropensityScoreMatcher import PropensityScoreMatcher
 
 # Set pathnames
-utils_dir = Path(__file__).parent.absolute()
-project_dir = utils_dir.parent.parent.absolute()
-data_dir = project_dir / "data"
-sql_query_dir = utils_dir / "SQL queries"
-output_dir = project_dir / "outputs"
+utils_dir = config.utils_dir  # Path(__file__).parent.absolute()
+project_dir = config.project_dir  # utils_dir.parent.parent.absolute()
+data_dir = config.data_dir  # project_dir / "data"
+sql_query_dir = config.sql_query_dir  # utils_dir / "SQL queries"
+output_dir = config.output_dir  # project_dir / "outputs"
 
 # Load data ######
 
