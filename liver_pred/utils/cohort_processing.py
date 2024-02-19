@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, text
 
 from pathlib import Path
 
-from functions import run_sql_from_txt, load_sql_from_text, get_index_date
+from functions import run_sql_from_txt, load_sql_from_text
 
 import config
 
@@ -133,7 +133,7 @@ if config.perform_matching:
         ],
     )
     post_match.fit_score()
-    with open(output_dir / "cohort_matching/report.txt", "a+") as f:
+    with open(output_dir / "cohort_matching/report.txt", "w+") as f:
         f.write(
             f"Prematching: \n ---------------\ncasen = {matcher.casen} \
                 \ncontroln = {matcher.controln} \
