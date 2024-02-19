@@ -1,6 +1,6 @@
 *.csv
 *.txt
 *.png
-.pyc
+*.pyc
 
 /data/*/*.csv
