@@ -4,4 +4,4 @@
 *.pyc
 
 /data/*/*.csv
-/utils/__pycache__
+/utils/__pycache__/
