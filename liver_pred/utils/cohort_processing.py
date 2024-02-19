@@ -59,7 +59,7 @@ else:
 
 # Match cohort #
 
-if config.perform_matching == True:
+if config.perform_matching:
     case_chars = characteristics[characteristics["hadm_id"].isin(cases["hadm_id"])]
     control_chars = characteristics[
         characteristics["subject_id"].isin(controls["subject_id"])
@@ -102,13 +102,20 @@ if config.perform_matching == True:
 
     matched_data = matcher.matched_data
     cohort_ids = matched_data[["subject_id", "hadm_id", "outcome"]]
+
     cohort_ids.to_csv(data_dir / "interim/matched_cohort_ids.csv")
 
     post_match = PropensityScoreMatcher(
         matched_data[matched_data["outcome"] == 1],
         matched_data[matched_data["outcome"] == 0],
         yvar="outcome",
-        exclude=["subject_id", "hadm_id", "scores", "match_id", "record_id"],
+        exclude=[
+            "subject_id",
+            "hadm_id",
+            "scores",
+            "match_id",
+            "record_id",
+        ],
     )
     post_match.fit_score()
     with open(output_dir / "cohort_matching/report.txt", "a+") as f:
