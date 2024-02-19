@@ -13,4 +13,9 @@ from functions import run_sql_from_txt, load_sql_from_text
 # import seaborn as sns
 import matplotlib.pyplot as plt
 
-from PropensityScoreMatcher import PropensityScoreMatcher
+import config
+
+data_dir = config.data_dir
+
+cohort_ids = pd.read_csv(data_dir / "interim/matched_cohort_ids.csv")
+print(cohort_ids.head())
