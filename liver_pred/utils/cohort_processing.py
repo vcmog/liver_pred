@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, text
 
 from pathlib import Path
 
-from functions import run_sql_from_txt, load_sql_from_text
+from functions import run_sql_from_txt, load_sql_from_text, get_index_date
 
 import config
 
@@ -105,11 +105,19 @@ if config.perform_matching:
     matcher.match(nmatches=5)
     print("Matching complete")
     matched_data = matcher.matched_data
+
     cohort_ids = matched_data[["subject_id", "hadm_id", "outcome"]]
-    cohort_ids = cohort_ids.join(cases.set_index("hadm_id")["index_date"], on="hadm_id")
-    cohort_ids = cohort_ids.join(
-        controls.set_index("hadm_id")["index_date"], on="hadm_id"
+
+    cohort_ids = pd.merge(
+        cohort_ids, cases[["hadm_id", "index_date"]], on="hadm_id", how="left"
     )
+    cohort_ids = pd.merge(
+        cohort_ids, controls[["hadm_id", "index_date"]], on="hadm_id", how="left"
+    )
+    cohort_ids["index_date"] = cohort_ids["index_date_x"].combine_first(
+        cohort_ids["index_date_y"]
+    )
+    cohort_ids = cohort_ids.drop(columns=["index_date_x", "index_date_y"])
     cohort_ids.to_csv(data_dir / "interim/matched_cohort_ids.csv")
 
     post_match = PropensityScoreMatcher(
@@ -138,6 +146,17 @@ else:
     cohort_ids = pd.concat([cases, controls])[
         ["subject_id", "hadm_id", "outcome"]
     ].sample(frac=1)
-    cohort_ids.to_csv(data_dir / "interim/matched_cohort_ids.csv")
+
+    cohort_ids = pd.merge(
+        cohort_ids, cases[["hadm_id", "index_date"]], on="hadm_id", how="left"
+    )
+    cohort_ids = pd.merge(
+        cohort_ids, controls[["hadm_id", "index_date"]], on="hadm_id", how="left"
+    )
+    cohort_ids["index_date"] = cohort_ids["index_date_x"].combine_first(
+        cohort_ids["index_date_y"]
+    )
+    cohort_ids = cohort_ids.drop(columns=["index_date_x", "index_date_y"])
+    cohort_ids.to_csv(data_dir / "interim/cohort_ids.csv")
 
 print("Cohort IDs identified")
