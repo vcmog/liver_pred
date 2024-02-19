@@ -10,6 +10,7 @@ from functions import run_sql_from_txt, load_sql_from_text
 
 import config
 
+
 # from sklearn.linear_model import LogisticRegression
 
 # import seaborn as sns
@@ -58,64 +59,66 @@ else:
 
 # Match cohort #
 
-
-case_chars = characteristics[characteristics["hadm_id"].isin(cases["hadm_id"])]
-control_chars = characteristics[
-    characteristics["subject_id"].isin(controls["subject_id"])
-]
-# sample random admission for each patient so duplicate patients are included
-control_chars = (
-    control_chars.groupby("subject_id")
-    .apply(lambda x: x.sample(1))
-    .reset_index(drop=True)
-)
-
-
-# Add outcome column to characteristics
-case_chars.loc[:, "outcome"] = 1
-control_chars.loc[:, "outcome"] = 0
-
-
-matcher = PropensityScoreMatcher(
-    case_chars,
-    control_chars,
-    yvar="outcome",
-    exclude=["subject_id", "hadm_id"],
-)
-
-print("Fitting models...")
-matcher.fit_score()
-print("Predicting scores...")
-matcher.predict_scores()
-print("Scores predicted")
-matcher.plot_scores(
-    save_fig=True, save_path=output_dir / "cohort_matching/pre_match_scores.png"
-)
-plt.show()
-matcher.tune_threshold(
-    save_fig=True, save_path=output_dir / "cohort_matching/threshold_plot.png"
-)
-plt.show()
-matcher.match(nmatches=5)
-
-
-matched_data = matcher.matched_data
-cohort_ids = matched_data[["subject_id", "hadm_id", "outcome"]]
-cohort_ids.to_csv(data_dir / "interim/matched_cohort_ids.csv")
-
-post_match = PropensityScoreMatcher(
-    matched_data[matched_data["outcome"] == 1],
-    matched_data[matched_data["outcome"] == 0],
-    yvar="outcome",
-    exclude=["subject_id", "hadm_id", "scores", "match_id", "record_id"],
-)
-post_match.fit_score()
-with open(output_dir / "cohort_matching/report.txt", "a+") as f:
-    f.write(
-        f"Prematching: \n ---------------\ncasen = {matcher.casen} \
-            \ncontroln = {matcher.controln} \
-            \naccuracy = {matcher.average_accuracy} \n\n\n \
-    Postmatching: \n ---------------\ncasen = {post_match.casen} \
-        \ncontroln = {post_match.controln} \
-        \naccuracy = {post_match.average_accuracy}"
+if config.perform_matching == True:
+    case_chars = characteristics[characteristics["hadm_id"].isin(cases["hadm_id"])]
+    control_chars = characteristics[
+        characteristics["subject_id"].isin(controls["subject_id"])
+    ]
+    # sample random admission for each patient so duplicate patients are included
+    control_chars = (
+        control_chars.groupby("subject_id")
+        .apply(lambda x: x.sample(1))
+        .reset_index(drop=True)
     )
+
+    # option for number of matches
+    no_matches = config.no_matches
+
+    # Add outcome column to characteristics
+    case_chars.loc[:, "outcome"] = 1
+    control_chars.loc[:, "outcome"] = 0
+
+    matcher = PropensityScoreMatcher(
+        case_chars,
+        control_chars,
+        yvar="outcome",
+        exclude=["subject_id", "hadm_id"],
+    )
+
+    print("Fitting models...")
+    matcher.fit_score()
+    print("Predicting scores...")
+    matcher.predict_scores()
+    print("Scores predicted")
+    matcher.plot_scores(
+        save_fig=True, save_path=output_dir / "cohort_matching/pre_match_scores.png"
+    )
+    plt.show()
+    matcher.tune_threshold(
+        save_fig=True, save_path=output_dir / "cohort_matching/threshold_plot.png"
+    )
+    plt.show()
+    matcher.match(nmatches=5)
+
+    matched_data = matcher.matched_data
+    cohort_ids = matched_data[["subject_id", "hadm_id", "outcome"]]
+    cohort_ids.to_csv(data_dir / "interim/matched_cohort_ids.csv")
+
+    post_match = PropensityScoreMatcher(
+        matched_data[matched_data["outcome"] == 1],
+        matched_data[matched_data["outcome"] == 0],
+        yvar="outcome",
+        exclude=["subject_id", "hadm_id", "scores", "match_id", "record_id"],
+    )
+    post_match.fit_score()
+    with open(output_dir / "cohort_matching/report.txt", "a+") as f:
+        f.write(
+            f"Prematching: \n ---------------\ncasen = {matcher.casen} \
+                \ncontroln = {matcher.controln} \
+                \naccuracy = {matcher.average_accuracy} \n\n\n \
+        Postmatching: \n ---------------\ncasen = {post_match.casen} \
+            \ncontroln = {post_match.controln} \
+            \naccuracy = {post_match.average_accuracy}"
+        )
+else:
+    cohort_ids = characteristics[["subject_id", "hadm_id", "outcome"]]
