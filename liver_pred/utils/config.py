@@ -9,6 +9,5 @@ output_dir = project_dir / "outputs"
 
 #### Propensity score matching options ####
 
-perform_matching = True
-
+perform_matching = False
 no_matches = 5
