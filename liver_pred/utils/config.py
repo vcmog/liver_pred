@@ -7,7 +7,7 @@ sql_query_dir = utils_dir / "SQL queries"
 output_dir = project_dir / "outputs"
 
 
-#### Propensity score matching options ####
+# Propensity score matching options
 
 perform_matching = False
 no_matches = 5
