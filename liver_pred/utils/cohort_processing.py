@@ -138,6 +138,6 @@ else:
     cohort_ids = pd.concat([cases, controls])[
         ["subject_id", "hadm_id", "outcome"]
     ].sample(frac=1)
-
+    cohort_ids.to_csv(data_dir / "interim/matched_cohort_ids.csv")
 
 print("Cohort IDs identified")
