@@ -121,4 +121,6 @@ if config.perform_matching == True:
             \naccuracy = {post_match.average_accuracy}"
         )
 else:
-    cohort_ids = characteristics[["subject_id", "hadm_id", "outcome"]]
+    cohort_ids = pd.concat([cases, controls])[
+        ["subject_id", "hadm_id", "outcome"]
+    ].sample(frac=1)
