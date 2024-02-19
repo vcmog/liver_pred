@@ -102,7 +102,10 @@ if config.perform_matching:
 
     matched_data = matcher.matched_data
     cohort_ids = matched_data[["subject_id", "hadm_id", "outcome"]]
-
+    cohort_ids = cohort_ids.join(cases.set_index("hadm_id")["index_date"], on="hadm_id")
+    cohort_ids = cohort_ids.join(
+        controls.set_index("hadm_id")["index_date"], on="hadm_id"
+    )
     cohort_ids.to_csv(data_dir / "interim/matched_cohort_ids.csv")
 
     post_match = PropensityScoreMatcher(
@@ -131,4 +134,6 @@ else:
     cohort_ids = pd.concat([cases, controls])[
         ["subject_id", "hadm_id", "outcome"]
     ].sample(frac=1)
+
+
 print("Cohort IDs identified")
