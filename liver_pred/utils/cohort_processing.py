@@ -124,3 +124,4 @@ else:
     cohort_ids = pd.concat([cases, controls])[
         ["subject_id", "hadm_id", "outcome"]
     ].sample(frac=1)
+print("Cohort IDs identified")
