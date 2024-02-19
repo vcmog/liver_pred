@@ -1,0 +1,34 @@
+Prematching: 
+ ---------------
+casen = 1360             
+controln = 179373             
+accuracy = 54.3 
+
+
+     Postmatching: 
+ ---------------
+casen = 1360         
+controln = 6800         
+accuracy = 50.0Prematching: 
+ ---------------
+casen = 1360             
+controln = 179373             
+accuracy = 54.55 
+
+
+     Postmatching: 
+ ---------------
+casen = 1360         
+controln = 6800         
+accuracy = 50.0Prematching: 
+ ---------------
+casen = 1360             
+controln = 179373             
+accuracy = 54.16 
+
+
+     Postmatching: 
+ ---------------
+casen = 1360         
+controln = 6800         
+accuracy = 50.0
