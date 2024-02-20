@@ -1,0 +1,10 @@
+Select cohort.subject_id, cohort.hadm_id as index_admission, 
+l.hadm_id as test_admission,l.itemid, l.valuenum, l.valueuom
+, l.flag, l.charttime, cohort.outcome, cohort.index_date
+from cohort
+join labevents l
+on cohort.subject_id = l.subject_id
+WHERE (cohort.hadm_id = l.hadm_id or 
+	l.charttime < (SELECT admittime 
+			from admissions adm 
+			where adm.hadm_id = cohort.hadm_id)) 
