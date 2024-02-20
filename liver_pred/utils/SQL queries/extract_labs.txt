@@ -6,5 +6,5 @@ join mimiciv_hosp.labevents l
 on cohort.subject_id = l.subject_id
 WHERE (cohort.hadm_id = l.hadm_id or 
 	l.charttime < (SELECT admittime 
-			from admissions adm 
+			from mimiciv_hosp.admissions adm 
 			where adm.hadm_id = cohort.hadm_id)) 
