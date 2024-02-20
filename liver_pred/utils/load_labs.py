@@ -25,5 +25,21 @@ else:
 engine = create_engine(config.sql_connection_str)
 
 # Load data
-lab_data = load_sql_from_text("extract_labs.txt", engine=engine)
+print("Loading data...")
+lab_data = load_sql_from_text(
+    "extract_labs.txt",
+    engine=engine,
+    dtype={
+        "subject_id": "Int64",
+        "index_admission": "Int64",
+        "test_admission": "datetime64[ns]",
+        "itemid": "Int64",
+        "valuenum": "float64",
+        "valueuom": "string",
+        "flag": "string",
+        "charttime": "datetime64[ns]",
+        "outcome": "boolean",
+        "index_date": "datetime64[ns]",
+    },
+)
 print("Lab data loaded")
