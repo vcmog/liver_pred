@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # import psycopg2
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, types
 
 from pathlib import Path
 
@@ -10,11 +10,13 @@ from functions import run_sql_from_txt, load_sql_from_text
 
 import config
 
+import sys
 
 import matplotlib.pyplot as plt
 
 from PropensityScoreMatcher import PropensityScoreMatcher
 
+print("----Beginning cohort processes----")
 # Set pathnames
 utils_dir = config.utils_dir  # Path(__file__).parent.absolute()
 project_dir = config.project_dir  # utils_dir.parent.parent.absolute()
@@ -22,6 +24,8 @@ data_dir = config.data_dir  # project_dir / "data"
 sql_query_dir = config.sql_query_dir  # utils_dir / "SQL queries"
 output_dir = config.output_dir  # project_dir / "outputs"
 
+if config.project_dir not in sys.path:
+    sys.path.append(config.project_dir)
 # Load data #
 
 # Setup postrges connection
@@ -176,6 +180,23 @@ else:  # If not performing matching
 
     # Save matched data
     cohort_ids.to_csv(data_dir / "interim/cohort_ids.csv")
-
-# Indicate completion of script
 print("Cohort IDs identified")
+
+
+# Create cohort table in SQL database
+print("Creating cohort table in SQL database...")
+cohort_ids.to_sql(
+    "cohort",
+    pg_engine,
+    schema="mimiciv_derived",
+    if_exists="replace",
+    index=False,
+    dtype={
+        "subject_id": types.Integer(),
+        "index_date": types.DateTime(),
+        "hadm_id": types.Integer(),
+        "outcome": types.Integer(),
+    },
+)
+print("Cohort table created")
+print("----Cohort processing complete----")
