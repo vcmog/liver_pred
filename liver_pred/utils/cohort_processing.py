@@ -29,9 +29,7 @@ if config.project_dir not in sys.path:
 # Load data #
 
 # Setup postrges connection
-pg_engine = create_engine(
-    "postgresql+psycopg2://postgres:postgres@localhost:5432/mimic4"
-)
+pg_engine = create_engine(config.sql_connection_str)
 
 
 # Load Cases
