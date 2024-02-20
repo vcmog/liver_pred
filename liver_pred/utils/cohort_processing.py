@@ -61,6 +61,8 @@ else:
 
 if config.perform_matching:
     print("Matching cohort...")
+
+    # Select characteristics for cases and controls
     case_chars = characteristics[
         characteristics["hadm_id"].isin(cases["hadm_id"])
     ].copy()
@@ -75,13 +77,14 @@ if config.perform_matching:
         .copy()
     )
 
-    # option for number of matches
+    # Set no_matches (from config file)
     no_matches = config.no_matches
 
     # Add outcome column to characteristics
     case_chars["outcome"] = 1
     control_chars["outcome"] = 0
 
+    # Initliaze PropensityScoreMatcher
     matcher = PropensityScoreMatcher(
         case_chars,
         control_chars,
@@ -89,6 +92,7 @@ if config.perform_matching:
         exclude=["subject_id", "hadm_id"],
     )
 
+    # Fit and score models
     print("Fitting models...")
     matcher.fit_score()
     print("Predicting scores...")
@@ -97,17 +101,21 @@ if config.perform_matching:
     matcher.plot_scores(
         save_fig=True, save_path=output_dir / "cohort_matching/pre_match_scores.png"
     )
-    plt.show()
+    # Tune threshold - how similar can controls be while maintaining data
     matcher.tune_threshold(
         save_fig=True, save_path=output_dir / "cohort_matching/threshold_plot.png"
     )
-    plt.show()
+    print("Threshold tuned")
+    # Find matches
     matcher.match(nmatches=5)
     print("Matching complete")
+
+    # Save matched data
     matched_data = matcher.matched_data
 
     cohort_ids = matched_data[["subject_id", "hadm_id", "outcome"]]
 
+    # Add in index date
     cohort_ids = pd.merge(
         cohort_ids, cases[["hadm_id", "index_date"]], on="hadm_id", how="left"
     )
@@ -120,6 +128,7 @@ if config.perform_matching:
     cohort_ids = cohort_ids.drop(columns=["index_date_x", "index_date_y"])
     cohort_ids.to_csv(data_dir / "interim/matched_cohort_ids.csv")
 
+    # Check how similar post match scores are
     post_match = PropensityScoreMatcher(
         matched_data[matched_data["outcome"] == 1],
         matched_data[matched_data["outcome"] == 0],
@@ -132,7 +141,11 @@ if config.perform_matching:
             "record_id",
         ],
     )
+
+    # Fit and score post-match models
     post_match.fit_score()
+
+    # Save report on matching
     with open(output_dir / "cohort_matching/report.txt", "w+") as f:
         f.write(
             f"Prematching: \n ---------------\ncasen = {matcher.casen} \
@@ -142,11 +155,14 @@ if config.perform_matching:
             \ncontroln = {post_match.controln} \
             \naccuracy = {post_match.average_accuracy}"
         )
-else:
+else:  # If not performing matching
+
+    # Randomly sample cases and controls
     cohort_ids = pd.concat([cases, controls])[
         ["subject_id", "hadm_id", "outcome"]
     ].sample(frac=1)
 
+    # Add in index date
     cohort_ids = pd.merge(
         cohort_ids, cases[["hadm_id", "index_date"]], on="hadm_id", how="left"
     )
@@ -157,6 +173,9 @@ else:
         cohort_ids["index_date_y"]
     )
     cohort_ids = cohort_ids.drop(columns=["index_date_x", "index_date_y"])
+
+    # Save matched data
     cohort_ids.to_csv(data_dir / "interim/cohort_ids.csv")
 
+# Indicate completion of script
 print("Cohort IDs identified")
