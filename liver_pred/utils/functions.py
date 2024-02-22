@@ -5,8 +5,8 @@ from sqlalchemy import create_engine, text
 from pathlib import Path
 
 
-def progress(i, n, prestr=""):
-    sys.stdout.write("\r{}: {}\{}".format(prestr, i, n))
+# def progress(i, n, prestr=""):
+#    sys.stdout.write("\r{}: {}\{}".format(prestr, i, n))
 
 
 def run_sql_from_txt(
