@@ -13,5 +13,5 @@ sql_connection_str = "postgresql+psycopg2://postgres:postgres@localhost:5432/mim
 
 # Propensity score matching options
 
-perform_matching = False
+perform_matching = True
 no_matches = 5
