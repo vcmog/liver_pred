@@ -3,8 +3,6 @@ import pandas as pd
 # import psycopg2
 from sqlalchemy import create_engine
 
-from pathlib import Path
-
 from functions import load_sql_from_text
 
 import config
