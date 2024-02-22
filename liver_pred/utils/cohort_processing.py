@@ -1,7 +1,7 @@
 import pandas as pd
 
 # import psycopg2
-from sqlalchemy import create_engine, types
+from sqlalchemy import create_engine, types, text
 
 from pathlib import Path
 
@@ -27,7 +27,7 @@ if config.project_dir not in sys.path:
 
 # Setup postrges connection
 pg_engine = create_engine(config.sql_connection_str)
-
+conn = pg_engine.connect()
 
 # Load Cases
 print("Loading cases...")
@@ -180,11 +180,13 @@ print("Cohort IDs identified")
 
 # Create cohort table in SQL database
 print("Creating cohort table in SQL database...")
+conn.execute(text("DROP TABLE IF EXISTS mimiciv_derived.cohort"))
+print("Dropped existing cohort table")
 cohort_ids.to_sql(
     "cohort",
     pg_engine,
     schema="mimiciv_derived",
-    if_exists="replace",
+    if_exists="fail",
     index=False,
     dtype={
         "subject_id": types.Integer(),
