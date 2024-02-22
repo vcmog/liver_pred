@@ -23,16 +23,17 @@ else:
     cohort_ids = pd.read_csv(data_dir / "interim/cohort_ids.csv", index_col=0)
 
 engine = create_engine(config.sql_connection_str)
+conn = engine.connect()  # .execution_options(stream_results=True)
 
 # Load data
 print("Loading data...")
 lab_data = load_sql_from_text(
     "extract_labs.txt",
-    engine=engine,
+    engine=conn,
     dtype={
         "subject_id": "Int64",
         "index_admission": "Int64",
-        "test_admission": "datetime64[ns]",
+        "test_admission": "Int64",
         "itemid": "Int64",
         "valuenum": "float64",
         "valueuom": "string",
@@ -43,3 +44,4 @@ lab_data = load_sql_from_text(
     },
 )
 print("Lab data loaded")
+lab_data.to_csv(config.data_dir / "interim/lab_events")
