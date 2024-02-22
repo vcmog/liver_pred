@@ -5,6 +5,4 @@ from mimiciv_derived.cohort cohort
 join mimiciv_hosp.labevents l
 on cohort.subject_id = l.subject_id
 WHERE (cohort.hadm_id = l.hadm_id or 
-	l.charttime < (SELECT admittime 
-			from mimiciv_hosp.admissions adm 
-			where adm.hadm_id = cohort.hadm_id)) 
+	l.charttime < cohort.index_date) 
