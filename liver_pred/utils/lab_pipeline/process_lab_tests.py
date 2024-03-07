@@ -5,9 +5,10 @@ pipeline_dir = os.path.dirname(__file__)
 labels = pd.read_csv(
     os.path.join(pipeline_dir, "d_labitems.csv"),
     index_col="itemid",
-    usecols=["itemid", "label"],
+    usecols=["itemid", "label", "fluid"],
 )
 
+labels["label"] = labels["fluid"] + " " + labels["label"]
 
 UNIT_CONVERSIONS = [
     # (Name,                      Old Unit, Check function,   Conversion function)
@@ -84,11 +85,12 @@ def process_lab_tests(
     if output_filename:
         output_filename = os.path.join(output_path, output_filename)
 
+    lab_test_data = return_labels(lab_test_data)
+
     common_labs, lab_test_data = missingness_threshold(
         lab_test_data, threshold=threshold
     )
     # lab_test_data = standardize_units(lab_test_data)
-    lab_test_data = return_labels(lab_test_data)
 
     if save_to_csv == True:
         lab_test_data.to_csv(output_filename)
@@ -154,7 +156,7 @@ def subject_count(lab_df):
 
 def patients_per_variable(lab_df):
     ## count of distinct patients which measurements for that variable
-    patient_counts = lab_df.groupby("itemid").agg(
+    patient_counts = lab_df.groupby("label").agg(
         count=("subject_id", pd.Series.nunique)
     )
     return patient_counts
