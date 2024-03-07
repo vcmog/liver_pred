@@ -24,7 +24,13 @@ processed_lab_data = process_lab_tests(
     threshold=config.lab_threshold,
     save_to_csv=config.lab_save_to_csv,
     aggregate=config.lab_aggregate,
+    output_filename=config.output_filename,
+    output_path=config.output_path,
 )
 
 print("Processed lab data:")
 print(processed_lab_data.head())
+print("Number of Unique Variables pre-processing:")
+print(labs_data["itemid"].nunique())
+print("Number of Unique Variables post-processing:")
+print(processed_lab_data["itemid"].nunique())

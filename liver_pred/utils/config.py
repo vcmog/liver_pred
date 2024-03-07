@@ -21,3 +21,5 @@ no_matches = 5
 lab_threshold = 0.2
 lab_aggregate = False
 lab_save_to_csv = True
+output_filename = "processed_lab_data.csv"
+output_path = data_dir / "interim"
