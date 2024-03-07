@@ -15,3 +15,9 @@ sql_connection_str = "postgresql+psycopg2://postgres:postgres@localhost:5432/mim
 
 perform_matching = True
 no_matches = 5
+
+
+# Lab Processing Options
+lab_threshold = 0.2
+lab_aggregate = False
+lab_save_to_csv = False
