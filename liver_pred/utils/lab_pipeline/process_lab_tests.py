@@ -150,15 +150,16 @@ def standardize_units(
 
 
 def subject_count(lab_df):
-    ## return number of unique subjects in df
+    # return number of unique subjects in df
     return lab_df["subject_id"].nunique()
 
 
 def patients_per_variable(lab_df):
-    ## count of distinct patients which measurements for that variable
+    # count of distinct patients which measurements for that variable
     patient_counts = lab_df.groupby("label").agg(
         count=("subject_id", pd.Series.nunique)
     )
+
     return patient_counts
 
 
@@ -167,12 +168,14 @@ def missingness_threshold(lab_df, threshold=0.8):
     threshold_presence = threshold * subject_count(lab_df)
     counts = patients_per_variable(lab_df)
     labs_above_threshold = counts[counts["count"] > threshold_presence].index
-    lab_df = lab_df[lab_df["itemid"].isin(labs_above_threshold)]
-
+    lab_df = lab_df[lab_df["label"].isin(labs_above_threshold)]
+    if lab_df.empty:
+        print("No data above threshold.")
     return labs_above_threshold, lab_df
 
 
 def return_labels(lab_df):
     ## Takes itemid and returns the relevant label
     merged_df = lab_df.merge(labels, left_on="itemid", right_index=True, how="left")
+
     return merged_df
