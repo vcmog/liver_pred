@@ -91,7 +91,8 @@ def process_lab_tests(
         lab_test_data, threshold=threshold
     )
     # lab_test_data = standardize_units(lab_test_data)
-
+    lab_test_data["index_date"] = pd.to_datetime(lab_test_data["index_date"])
+    lab_test_data["charttime"] = pd.to_datetime(lab_test_data["charttime"])
     if save_to_csv == True:
         lab_test_data.to_csv(output_filename)
     return lab_test_data
