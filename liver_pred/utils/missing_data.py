@@ -52,13 +52,14 @@ def remove_if_missing_from_other(df1, df2):
         df2 (pandas.DataFrame): The second dataframe.
 
     Returns:
-        tuple: A tuple containing the filtered df1, filtered df2, and the count of missing subject_ids.
+        tuple: A tuple containing the filtered df1, filtered df2, and the removed subject_ids.
     """
     common_subject_ids, all_subject_ids = compare_subject_ids(df1, df2)
+    removed_subject_ids = [i for i in all_subject_ids if i not in common_subject_ids]
     return (
         df1[df1["subject_id"].isin(common_subject_ids)],
         df2[df2["subject_id"].isin(common_subject_ids)],
-        len(all_subject_ids) - len(common_subject_ids),
+        removed_subject_ids,
     )
 
 
