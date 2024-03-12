@@ -95,7 +95,7 @@ def historical_labs(lab_df, n_days=14):
     return historical_labs
 
 
-def write_report(current_labs, historical_labs, dir):
+def write_report(current_labs, historical_labs, dir, extra_strings=None):
     current_len = len(current_labs)
     current_control_len = len(current_labs[current_labs["outcome"] == 0])
     current_case_len = len(current_labs[current_labs["outcome"] == 1])
@@ -137,6 +137,7 @@ def write_report(current_labs, historical_labs, dir):
                 * 100,
             )
         )
+        f.write(extra_strings)
 
 
 def bin_measurements(lab_df):
@@ -214,7 +215,6 @@ def generate_trend_features(
             month_12 = model_results.slope * distal_window + model_results.intercept
 
             distal_trend = month_12 - month_6
-            print(current_df.head())
             proximal_trend = month_6 - (current_df.loc[subject_id][label])
 
         else:
