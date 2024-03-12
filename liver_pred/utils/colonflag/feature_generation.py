@@ -69,12 +69,15 @@ def historical_labs(lab_df, n_days=14):
 
 
 def write_report(current_labs, historical_labs, dir):
+    current_len = len(current_labs)
+    current_control_len = len(current_labs[current_labs["outcome"] == 0])
+    current_case_len = len(current_labs[current_labs["outcome"] == 1])
     with open(dir / "colonflag/historical_labs_report.txt", "w") as f:
         f.write(
             "Number of patients with measurements in current_labs: {} (total) {} (control) {} (case)\n".format(
-                current_labs["subject_id"].nunique(),
-                current_labs[current_labs["outcome"] == 0]["subject_id"].nunique(),
-                current_labs[current_labs["outcome"] == 1]["subject_id"].nunique(),
+                current_len,
+                current_control_len,
+                current_case_len,
             )
         )
         f.write(
@@ -90,23 +93,19 @@ def write_report(current_labs, historical_labs, dir):
         )
         f.write(
             "Percentages of patients with historical_labs measurements: {:.2f}% (total) {:.2f}% (control) {:.2f}% (case)\n".format(
-                (
-                    historical_labs["subject_id"].nunique()
-                    / current_labs["subject_id"].nunique()
-                )
-                * 100,
+                (historical_labs["subject_id"].nunique() / current_len) * 100,
                 (
                     historical_labs[historical_labs["outcome"] == 0][
                         "subject_id"
                     ].nunique()
-                    / current_labs[current_labs["outcome"] == 0]["subject_id"].nunique()
+                    / current_control_len
                 )
                 * 100,
                 (
                     historical_labs[historical_labs["outcome"] == 1][
                         "subject_id"
                     ].nunique()
-                    / current_labs[current_labs["outcome"] == 1]["subject_id"].nunique()
+                    / current_case_len
                 )
                 * 100,
             )
