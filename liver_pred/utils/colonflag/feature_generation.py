@@ -25,6 +25,34 @@ def lab_within_n_days(lab_df, n_days):
     return labs_within_n_days
 
 
+def current_bloods_df(lab_df, n_days=14):
+    """
+    Generate a dataframe of current blood test results for each subject.
+
+    Args:
+        lab_df (pandas.DataFrame): The input dataframe containing blood test results.
+        n_days (int, optional): The number of days to consider for current blood test results. Defaults to 14.
+
+    Returns:
+        pandas.DataFrame: A dataframe with the mean value of each lab test for each subject,
+                          with outcomes separated into a different column and the lab tests pivoted
+                          so that each variable is a column.
+    """
+    current = lab_within_n_days(lab_df, n_days)
+    # Find the mean value for each lab test
+    current = current.groupby(["subject_id", "Variable"])["valuenum", "outcome"].agg(
+        "mean"
+    )
+    # separate outcomes into a different column so can pivot the lab_df so that each variable is a column
+    outcomes = current["outcome"].groupby("subject_id").agg("max")
+    current = current.pivot_table(
+        index="subject_id", columns="Variable", values="valuenum"
+    )
+    Variables = list(current.columns)
+    current["outcome"] = outcomes
+    return current
+
+
 def historical_labs(lab_df, n_days=14):
     """
     Filter the lab_df dataframe to include only the historical lab records that are older than n_days.
