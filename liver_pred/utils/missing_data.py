@@ -37,7 +37,7 @@ def compare_subject_ids(df1, df2):
     Returns:
     list: The subject IDs that are present in both DataFrames.
     """
-    return list(set(df1["subject_id"]).intersection(set(df2["subject_id"])))
+    return list(set(df1["subject_id"]).intersection(set(df2["subject_id"]))), list(set(df1["subject_id"]).union(set(df2["subject_id"]))))
 
 
 def remove_if_missing_from_other(df1, df2):
