@@ -37,10 +37,6 @@ def compare_subject_ids(df1, df2):
     Returns:
     list: The subject IDs that are present in both DataFrames.
     """
-    if "subject_id" not in df1.columns:
-        df1 = df1.index.to_frame()
-    if "subject_id" not in df2.columns:
-        df2 = df2.index.to_frame()
     return (
         list(set(df1["subject_id"]).intersection(set(df2["subject_id"]))),
         list(set(df1["subject_id"]).union(set(df2["subject_id"]))),
@@ -80,16 +76,17 @@ def fill_na_zero(df):
     """
     common_labs_missing_refs = []
     for col in df.columns:
-        if "trend" in col:
-            df[col].fillna(0, inplace=True)
-        elif (
-            ref_ranges[ref_ranges["label"] == col]["ref_range_upper"].isna()
-            | ref_ranges[ref_ranges["label"] == col]["ref_range_lower"].isna()
-        ):
-            print("Ref range missing:", col)
-            common_labs_missing_refs += [col]
-        else:
-            df[col].fillna(0, inplace=True)
+        if col != "subject_id":
+            if "trend" in col:
+                df[col].fillna(0, inplace=True)
+            elif (
+                ref_ranges[ref_ranges["label"] == col]["ref_range_upper"].isna()
+                | ref_ranges[ref_ranges["label"] == col]["ref_range_lower"].isna()
+            ):
+                print("Ref range missing:", col)
+                common_labs_missing_refs += [col]
+            else:
+                df[col].fillna(0, inplace=True)
     return df
 
 
@@ -159,24 +156,29 @@ def fill_nas_normal(df):
     """
     common_labs_missing_refs = []
     for col in df.columns:
-        if "trend" in col:
-            df[col].fillna(0, inplace=True)
-        elif (
-            ref_ranges[ref_ranges["label"] == col]["ref_range_upper"].isna().any()
-            | ref_ranges[ref_ranges["label"] == col]["ref_range_lower"].isna().any()
-        ):
-            print("Ref range missing:", col)
-            common_labs_missing_refs += [col]
-        else:
-            try:
-                lower_bound = ref_ranges[ref_ranges["label"] == col]["ref_range_lower"]
-                upper_bound = ref_ranges[ref_ranges["label"] == col]["ref_range_upper"]
-                mean = (lower_bound + upper_bound) / 2
-                std_dev = max(
-                    ((upper_bound - lower_bound) / 3.92).values[0], 1e-6
-                )  # set a minimum std_dev to avoid division by zero
-                samples = np.random.normal(mean, std_dev, size=len(df[col]))
-                df[col].fillna(pd.Series(samples), inplace=True)
-            except IndexError:
-                print("Error filling:", col)
+        if col != "subject_id":
+            if "trend" in col:
+                df[col].fillna(0, inplace=True)
+            elif (
+                ref_ranges[ref_ranges["label"] == col]["ref_range_upper"].isna().any()
+                | ref_ranges[ref_ranges["label"] == col]["ref_range_lower"].isna().any()
+            ):
+                print("Ref range missing:", col)
+                common_labs_missing_refs += [col]
+            else:
+                try:
+                    lower_bound = ref_ranges[ref_ranges["label"] == col][
+                        "ref_range_lower"
+                    ]
+                    upper_bound = ref_ranges[ref_ranges["label"] == col][
+                        "ref_range_upper"
+                    ]
+                    mean = (lower_bound + upper_bound) / 2
+                    std_dev = max(
+                        ((upper_bound - lower_bound) / 3.92).values[0], 1e-6
+                    )  # set a minimum std_dev to avoid division by zero
+                    samples = np.random.normal(mean, std_dev, size=len(df[col]))
+                    df[col].fillna(pd.Series(samples), inplace=True)
+                except IndexError:
+                    print("Error filling:", col)
     return df
