@@ -10,34 +10,34 @@ labels = pd.read_csv(
 
 labels["label"] = labels["fluid"] + " " + labels["label"]
 
-UNIT_CONVERSIONS = [
-    # (Name,                      Old Unit, Check function,   Conversion function)
-    # TODO: add 'new unit' to this so function can update unit column
-    # ('weight',                   'oz',    None,             lambda x: x/16.*0.45359237),   #to kg
-    # ('weight',                   'lbs',   None,             lambda x: x*0.45359237),       #to kg
-    # ('fraction inspired oxygen', None,    lambda x: x > 1,  lambda x: x/100.),             #to decimal
-    # ('oxygen saturation',        None,    lambda x: x <= 1, lambda x: x*100.),             #to percentage
-    # ('temperature',              'f',     lambda x: x > 79, lambda x: (x - 32) * 5./9),    #to C
-    # ('height',                   'in',    None,             lambda x: x*2.54),             #to cm
-    # ('50889',                    'mg/dL', None,             lambda x: x*10),               #C-Reactive Protein to mg/L
-    # ('50916',                    'nG/mL', None,             lambda x: x/10),               #DHEA-Sulfate to ug/dl
-    # ('50926',                    'mIU/L', None,             lambda x: x/1000),              #Follicle Stimulating Hormone to mIU/ml
-    # ('50989',                    'ng/dL', None,             lambda x: x*10),                #Free testosterone to pg/ml
-    #### MIMIC-IV SPECIFIC ####
-    #'51464' Urine bilirubin, EU/dL to mg/dL is the same
-    #'51654' HIV 1 viral load, log10 copies/mL both same units, abbreviated differently
-    #'51282' Reticulocyte COunt, only 3 have /mm3 and they have no value, not worth converting
-    #'51249' MCHC % and g/dL are the same measurement
-    #'51229' Heparin LMW IU/ML and U/ML are the same
-    # '51228' Heparin, ''
-    # '50937 "Hepatitis A Virus Antibody" not actual units, N/A, null, pos/neg
-    # 50918, double stranded dna, only one unit (one is null)
-    # 51099 equivalent units
-    # 50915 -ddimer  unclear if they're equivalent and no clear sanity check
-    # 51085 - extra unit is just an n/a
-    # 51196 -ddimer same as 50915
-    # 50993 - equivalent
-]
+# UNIT_CONVERSIONS = [
+# (Name,                      Old Unit, Check function,   Conversion function)
+# TODO: add 'new unit' to this so function can update unit column
+# ('weight',                   'oz',    None,             lambda x: x/16.*0.45359237),   #to kg
+# ('weight',                   'lbs',   None,             lambda x: x*0.45359237),       #to kg
+# ('fraction inspired oxygen', None,    lambda x: x > 1,  lambda x: x/100.),             #to decimal
+# ('oxygen saturation',        None,    lambda x: x <= 1, lambda x: x*100.),             #to percentage
+# ('temperature',              'f',     lambda x: x > 79, lambda x: (x - 32) * 5./9),    #to C
+# ('height',                   'in',    None,             lambda x: x*2.54),             #to cm
+# ('50889',                    'mg/dL', None,             lambda x: x*10),               #C-Reactive Protein to mg/L
+# ('50916',                    'nG/mL', None,             lambda x: x/10),               #DHEA-Sulfate to ug/dl
+# ('50926',                    'mIU/L', None,             lambda x: x/1000),              #Follicle Stimulating Hormone to mIU/ml
+# ('50989',                    'ng/dL', None,             lambda x: x*10),                #Free testosterone to pg/ml
+#### MIMIC-IV SPECIFIC ####
+#'51464' Urine bilirubin, EU/dL to mg/dL is the same
+#'51654' HIV 1 viral load, log10 copies/mL both same units, abbreviated differently
+#'51282' Reticulocyte COunt, only 3 have /mm3 and they have no value, not worth converting
+#'51249' MCHC % and g/dL are the same measurement
+#'51229' Heparin LMW IU/ML and U/ML are the same
+# '51228' Heparin, ''
+# '50937 "Hepatitis A Virus Antibody" not actual units, N/A, null, pos/neg
+# 50918, double stranded dna, only one unit (one is null)
+# 51099 equivalent units
+# 50915 -ddimer  unclear if they're equivalent and no clear sanity check
+# 51085 - extra unit is just an n/a
+# 51196 -ddimer same as 50915
+# 50993 - equivalent
+# ]
 
 
 ####TO DO: check returned datatypes
