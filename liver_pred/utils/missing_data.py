@@ -7,9 +7,9 @@ if not config.utils_dir / "ref_ranges.csv":
 ref_ranges = pd.read_csv(config.utils_dir / "ref_ranges.csv")
 
 
-def process_ref_ranges(ref_range_csv):
-    if ref_ranges.columns.contains("centre"):
-        return ref_range_csv
+def process_ref_ranges(ref_ranges):
+    if "centre" in ref_ranges.columns:
+        return ref_ranges
     ref_ranges["label"] = ref_ranges["fluid"] + " " + ref_ranges["label"]
     ref_ranges = (
         ref_ranges.groupby("label")
@@ -19,11 +19,43 @@ def process_ref_ranges(ref_range_csv):
     ref_ranges["centre"] = round(
         (ref_ranges["ref_range_upper"] + ref_ranges["ref_range_lower"]) / 2, 2
     )
-    pd.save_csv(config.utils_dir / "ref_ranges.csv", ref_ranges)
+    ref_ranges.to_csv(config.utils_dir / "ref_ranges.csv")
     return ref_ranges
 
 
 ref_ranges = process_ref_ranges(ref_ranges)
+
+
+def compare_subject_ids(df1, df2):
+    """
+    Compare the subject IDs in two DataFrames.
+
+    Parameters:
+    df1 (pandas.DataFrame): The first DataFrame to compare.
+    df2 (pandas.DataFrame): The second DataFrame to compare.
+
+    Returns:
+    list: The subject IDs that are present in both DataFrames.
+    """
+    return list(set(df1["subject_id"]).intersection(set(df2["subject_id"])))
+
+
+def remove_if_missing_from_other(df1, df2):
+    """
+    Remove subject IDs from the first DataFrame that are not present in the second DataFrame.
+
+    Parameters:
+    df1 (pandas.DataFrame): The first DataFrame to remove subject IDs from.
+    df2 (pandas.DataFrame): The second DataFrame to compare subject IDs to.
+
+    Returns:
+    pandas.DataFrame: The first DataFrame with subject IDs removed if they are not present in the second DataFrame.
+    """
+    common_subject_ids = compare_subject_ids(df1, df2)
+    return (
+        df1[df1["subject_id"].isin(common_subject_ids)],
+        df2[df2["subject_id"].isin(common_subject_ids)],
+    )
 
 
 def fill_na_zero(df):
@@ -120,16 +152,21 @@ def fill_nas_normal(df):
         if "trend" in col:
             df[col].fillna(0, inplace=True)
         elif (
-            ref_ranges[ref_ranges["label"] == col]["ref_range_upper"].isna()
-            | ref_ranges[ref_ranges["label"] == col]["ref_range_lower"].isna()
+            ref_ranges[ref_ranges["label"] == col]["ref_range_upper"].isna().any()
+            | ref_ranges[ref_ranges["label"] == col]["ref_range_lower"].isna().any()
         ):
             print("Ref range missing:", col)
             common_labs_missing_refs += [col]
         else:
-            lower_bound = ref_ranges[ref_ranges["label"] == col]["ref_range_lower"]
-            upper_bound = ref_ranges[ref_ranges["label"] == col]["ref_range_upper"]
-            mean = (lower_bound + upper_bound) / 2
-            std_dev = (upper_bound - lower_bound) / 3.92
-            samples = np.random.normal(mean, std_dev, num_samples=len(df[col]))
-            df[col].fillna(samples, inplace=True)
+            try:
+                lower_bound = ref_ranges[ref_ranges["label"] == col]["ref_range_lower"]
+                upper_bound = ref_ranges[ref_ranges["label"] == col]["ref_range_upper"]
+                mean = (lower_bound + upper_bound) / 2
+                std_dev = max(
+                    ((upper_bound - lower_bound) / 3.92).values[0], 1e-6
+                )  # set a minimum std_dev to avoid division by zero
+                samples = np.random.normal(mean, std_dev, size=len(df[col]))
+                df[col].fillna(pd.Series(samples), inplace=True)
+            except IndexError:
+                print("Error filling:", col)
     return df
