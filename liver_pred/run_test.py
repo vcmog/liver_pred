@@ -32,7 +32,10 @@ historical_labs = feature_generation.historical_labs(
 current_labs, historical_labs, removed = md.remove_if_missing_from_other(
     current_labs, historical_labs
 )
-
+print(f"Removed {len(removed)} subject_ids from current_labs and historical_labs")
+print(
+    f"Removed {sum(cohort_ids[cohort_ids['subject_id'].isin(removed)]['outcome'])} positive outcomes from current_labs"
+)
 historical_labs.to_csv(config.utils_dir / "historical_labs.csv")
 
 feature_generation.write_report(current_labs, historical_labs, config.output_dir)
