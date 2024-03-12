@@ -6,6 +6,32 @@ from datetime import timedelta
 from scipy.stats import linregress
 
 
+def find_variables(lab_df):
+    lab_variables = lab_df["label"].unique()
+    return lab_variables
+
+
+def check_and_add_columns(df, variable_names):
+    """
+    Check if the given variable names exist as columns in the DataFrame.
+    If a variable name doesn't exist, add it as a column with NaN values.
+
+    Args:
+        df (pandas.DataFrame): The DataFrame to check and modify.
+        variable_names (list): A list of variable names to check and add.
+
+    Returns:
+        None
+    """
+
+    for var_name in variable_names:
+        if var_name not in df.columns:
+            # If variable name doesn't exist as a column, add it with NaN values
+            df[var_name] = (
+                np.nan
+            )  # Or you can use df[var_name] = None for object columns
+
+
 def lab_within_n_days(lab_df, n_days):
     """
     Returns a subset of lab_df containing lab measurements within a specified number of days from the index date.
@@ -17,7 +43,7 @@ def lab_within_n_days(lab_df, n_days):
     Returns:
     DataFrame: A subset of lab_df containing lab measurements within n_days from the index date.
     """
-    d = timedelta(days=1)
+    d = timedelta(days=n_days)
     labs_within_n_days = lab_df[
         (lab_df["charttime"] < lab_df["index_date"] + d)
         & (lab_df["charttime"] > lab_df["index_date"] - d)
@@ -25,7 +51,7 @@ def lab_within_n_days(lab_df, n_days):
     return labs_within_n_days
 
 
-def current_bloods_df(lab_df, n_days=14):
+def current_bloods_df(lab_df, n_days=7):
     """
     Generate a dataframe of current blood test results for each subject.
 
@@ -48,6 +74,7 @@ def current_bloods_df(lab_df, n_days=14):
     current = current.pivot_table(
         index="subject_id", columns="label", values="valuenum"
     )
+    check_and_add_columns(current, find_variables(lab_df))
     current["outcome"] = outcomes
     return current
 
@@ -187,7 +214,8 @@ def generate_trend_features(
             month_12 = model_results.slope * distal_window + model_results.intercept
 
             distal_trend = month_12 - month_6
-            proximal_trend = month_6 - (current_df[label].loc[subject_id])
+            print(current_df.head())
+            proximal_trend = month_6 - (current_df.loc[subject_id][label])
 
         else:
             distal_trend = proximal_trend = 0
