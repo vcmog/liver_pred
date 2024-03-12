@@ -40,15 +40,14 @@ def current_bloods_df(lab_df, n_days=14):
     """
     current = lab_within_n_days(lab_df, n_days)
     # Find the mean value for each lab test
-    current = current.groupby(["subject_id", "Variable"])["valuenum", "outcome"].agg(
+    current = current.groupby(["subject_id", "label"])[["valuenum", "outcome"]].agg(
         "mean"
     )
     # separate outcomes into a different column so can pivot the lab_df so that each variable is a column
     outcomes = current["outcome"].groupby("subject_id").agg("max")
     current = current.pivot_table(
-        index="subject_id", columns="Variable", values="valuenum"
+        index="subject_id", columns="label", values="valuenum"
     )
-    Variables = list(current.columns)
     current["outcome"] = outcomes
     return current
 
