@@ -37,24 +37,28 @@ def compare_subject_ids(df1, df2):
     Returns:
     list: The subject IDs that are present in both DataFrames.
     """
-    return list(set(df1["subject_id"]).intersection(set(df2["subject_id"]))), list(set(df1["subject_id"]).union(set(df2["subject_id"]))))
+    return (
+        list(set(df1["subject_id"]).intersection(set(df2["subject_id"]))),
+        list(set(df1["subject_id"]).union(set(df2["subject_id"]))),
+    )
 
 
 def remove_if_missing_from_other(df1, df2):
     """
-    Remove subject IDs from the first DataFrame that are not present in the second DataFrame.
+    Removes rows from df1 and df2 where the subject_id is missing in either dataframe.
 
-    Parameters:
-    df1 (pandas.DataFrame): The first DataFrame to remove subject IDs from.
-    df2 (pandas.DataFrame): The second DataFrame to compare subject IDs to.
+    Args:
+        df1 (pandas.DataFrame): The first dataframe.
+        df2 (pandas.DataFrame): The second dataframe.
 
     Returns:
-    pandas.DataFrame: The first DataFrame with subject IDs removed if they are not present in the second DataFrame.
+        tuple: A tuple containing the filtered df1, filtered df2, and the count of missing subject_ids.
     """
-    common_subject_ids = compare_subject_ids(df1, df2)
+    common_subject_ids, all_subject_ids = compare_subject_ids(df1, df2)
     return (
         df1[df1["subject_id"].isin(common_subject_ids)],
         df2[df2["subject_id"].isin(common_subject_ids)],
+        len(all_subject_ids) - len(common_subject_ids),
     )
 
 
