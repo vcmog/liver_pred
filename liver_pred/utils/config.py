@@ -31,7 +31,7 @@ lead_time = 0
 observation_window = None
 
 # Window for 'current' lab tests in days around window
-current_window = 1
+current_window = 3
 
 # Window for binning historical lab tests in days
 historical_window = 14
