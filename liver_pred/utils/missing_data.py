@@ -52,7 +52,8 @@ def remove_if_missing_from_other(df1, df2):
         df2 (pandas.DataFrame): The second dataframe.
 
     Returns:
-        tuple: A tuple containing the filtered df1, filtered df2, and the removed subject_ids.
+        tuple: A tuple containing the filtered df1, filtered df2,
+          and the removed subject_ids.
     """
 
     common_subject_ids, all_subject_ids = compare_subject_ids(df1, df2)
