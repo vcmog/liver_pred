@@ -2,15 +2,53 @@ import pandas as pd
 import numpy as np
 import utils.config as config
 
+if not config.utils_dir / "ref_ranges.csv":
+    print("No reference range file found, upload using SQL query")
 ref_ranges = pd.read_csv(config.utils_dir / "ref_ranges.csv")
-ref_ranges["label"] = ref_ranges["fluid"] + " " + ref_ranges["label"]
-ref_ranges["centre"] = round(
-    (ref_ranges["ref_range_upper"] + ref_ranges["ref_range_lower"]) / 2, 2
-)
-non_ref_ranges = ref_ranges[
-    ref_ranges["ref_range_upper"].isna() | ref_ranges["ref_range_lower"].isna()
-]
-print(ref_ranges[ref_ranges["label"] == "Blood % Hemoglobin A1c"])
+
+
+def process_ref_ranges(ref_range_csv):
+    if ref_ranges.columns.contains("centre"):
+        return ref_range_csv
+    ref_ranges["label"] = ref_ranges["fluid"] + " " + ref_ranges["label"]
+    ref_ranges = (
+        ref_ranges.groupby("label")
+        .agg({"ref_range_lower": "min", "ref_range_upper": "max"})
+        .reset_index()
+    )
+    ref_ranges["centre"] = round(
+        (ref_ranges["ref_range_upper"] + ref_ranges["ref_range_lower"]) / 2, 2
+    )
+    pd.save_csv(config.utils_dir / "ref_ranges.csv", ref_ranges)
+    return ref_ranges
+
+
+ref_ranges = process_ref_ranges(ref_ranges)
+
+
+def fill_na_zero(df):
+    """
+    Fills missing values in the given DataFrame with zeros.
+
+    Parameters:
+    df (pandas.DataFrame): The DataFrame containing the data to be filled.
+
+    Returns:
+    pandas.DataFrame: The DataFrame with missing values filled with zeros.
+    """
+    common_labs_missing_refs = []
+    for col in df.columns:
+        if "trend" in col:
+            df[col].fillna(0, inplace=True)
+        elif (
+            ref_ranges[ref_ranges["label"] == col]["ref_range_upper"].isna()
+            | ref_ranges[ref_ranges["label"] == col]["ref_range_lower"].isna()
+        ):
+            print("Ref range missing:", col)
+            common_labs_missing_refs += [col]
+        else:
+            df[col].fillna(0, inplace=True)
+    return df
 
 
 def fill_na_midrange(df):
