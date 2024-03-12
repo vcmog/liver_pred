@@ -76,7 +76,7 @@ def current_bloods_df(lab_df, n_days=7):
     )
     check_and_add_columns(current, find_variables(lab_df))
     current["outcome"] = outcomes
-    return current
+    return current.reset_index()
 
 
 def historical_labs(lab_df, n_days=14):
@@ -137,7 +137,9 @@ def write_report(current_labs, historical_labs, dir, extra_strings=None):
                 * 100,
             )
         )
-        f.write(extra_strings)
+        if extra_strings:
+            for string in extra_strings:
+                f.write(string + "\n")
 
 
 def bin_measurements(lab_df):
@@ -215,7 +217,9 @@ def generate_trend_features(
             month_12 = model_results.slope * distal_window + model_results.intercept
 
             distal_trend = month_12 - month_6
-            proximal_trend = month_6 - (current_df.loc[subject_id][label])
+            proximal_trend = month_6 - (
+                current_df[current_df["subject_id"] == subject_id][label]
+            )
 
         else:
             distal_trend = proximal_trend = 0
