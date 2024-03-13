@@ -32,7 +32,7 @@ def check_and_add_columns(df, variable_names):
             )  # Or you can use df[var_name] = None for object columns
 
 
-def lab_within_n_days(lab_df, n_days):
+def lab_within_n_days(lab_df, n_days_pre, n_days_post):
     """
     Returns a subset of lab_df containing lab measurements within a specified number of days from the index date.
 
@@ -43,15 +43,16 @@ def lab_within_n_days(lab_df, n_days):
     Returns:
     DataFrame: A subset of lab_df containing lab measurements within n_days from the index date.
     """
-    d = timedelta(days=n_days)
+    d1 = timedelta(days=n_days_pre)
+    d2 = timedelta(days=n_days_post)
     labs_within_n_days = lab_df[
-        (lab_df["charttime"] < lab_df["index_date"] + d)
-        & (lab_df["charttime"] > lab_df["index_date"] - d)
+        (lab_df["charttime"] < lab_df["index_date"] + d2)
+        & (lab_df["charttime"] > lab_df["index_date"] - d1)
     ]
     return labs_within_n_days
 
 
-def current_bloods_df(lab_df, n_days=7):
+def current_bloods_df(lab_df, n_days_pre=7, n_days_post=1):
     """
     Generate a dataframe of current blood test results for each subject.
 
@@ -64,7 +65,7 @@ def current_bloods_df(lab_df, n_days=7):
                           with outcomes separated into a different column and the lab tests pivoted
                           so that each variable is a column.
     """
-    current = lab_within_n_days(lab_df, n_days)
+    current = lab_within_n_days(lab_df, n_days_pre=7, n_days_post=1)
     # Find the mean value for each lab test
     current = current.groupby(["subject_id", "label"])[["valuenum", "outcome"]].agg(
         "mean"
