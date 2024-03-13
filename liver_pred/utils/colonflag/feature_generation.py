@@ -1,7 +1,5 @@
 import pandas as pd
 import numpy as np
-import sys
-import os
 from datetime import timedelta
 from scipy.stats import linregress
 
