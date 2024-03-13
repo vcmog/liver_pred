@@ -35,6 +35,9 @@ if Path(data_dir / "input/cases.csv").exists():
     cases = pd.read_csv(data_dir / "input/cases.csv")
 else:
     cases = load_sql_from_text("liver_cancer_patients.txt", engine=pg_engine)
+    cases.drop_duplicates(
+        inplace=True
+    )  # if patient was diagnosed twice in one admission, only keep one
     cases.to_csv(data_dir / "input/cases.csv")
 # Load Controls
 print("Loading controls...")
@@ -186,7 +189,7 @@ cohort_ids.to_sql(
     "cohort",
     pg_engine,
     schema="mimiciv_derived",
-    if_exists="fail",
+    if_exists="replace",
     index=False,
     dtype={
         "subject_id": types.Integer(),
