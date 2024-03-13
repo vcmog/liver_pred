@@ -30,11 +30,11 @@ model_order = 1
 lead_time = 0
 observation_window = None
 
-# Window for 'current' lab tests in days around window
-current_window = 3  # NOTE: if patient doesn't have a lab test within this window, the code will not run
-
+# Window for 'current' lab tests in days around index
+current_window_preindex = 30
+current_window_postindex = 1
 # Window for binning historical lab tests in days
-historical_window = 14
+historical_window = 30
 bin_window = 7
 
 # Timepoints for proximal and distal features in days
