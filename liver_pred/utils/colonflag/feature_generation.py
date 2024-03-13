@@ -32,14 +32,17 @@ def check_and_add_columns(df, variable_names):
 
 def lab_within_n_days(lab_df, n_days_pre, n_days_post):
     """
-    Returns a subset of lab_df containing lab measurements within a specified number of days from the index date.
+    Returns a subset of lab_df containing lab measurements within a specified
+    number of days from the index date.
 
     Parameters:
     lab_df (DataFrame): The dataframe containing lab measurements.
-    n_days (int): The number of days within which the lab measurements should be considered.
+    n_days (int): The number of days within which the lab measurements
+    should be considered.
 
     Returns:
-    DataFrame: A subset of lab_df containing lab measurements within n_days from the index date.
+    DataFrame: A subset of lab_df containing lab measurements within n_days
+    from the index date.
     """
     d1 = timedelta(days=n_days_pre)
     d2 = timedelta(days=n_days_post)
@@ -56,12 +59,13 @@ def current_bloods_df(lab_df, n_days_pre=7, n_days_post=1):
 
     Args:
         lab_df (pandas.DataFrame): The input dataframe containing blood test results.
-        n_days (int, optional): The number of days to consider for current blood test results. Defaults to 14.
+        n_days (int, optional): The number of days to consider for current blood test
+        results. Defaults to 14.
 
     Returns:
-        pandas.DataFrame: A dataframe with the mean value of each lab test for each subject,
-                          with outcomes separated into a different column and the lab tests pivoted
-                          so that each variable is a column.
+        pandas.DataFrame: A dataframe with the mean value of each lab test for each
+                          subject, with outcomes separated into a different column
+                          and the lab tests pivoted so that each variable is a column.
     """
     current = lab_within_n_days(lab_df, n_days_pre=7, n_days_post=1)
     # Find the mean value for each lab test
@@ -80,11 +84,13 @@ def current_bloods_df(lab_df, n_days_pre=7, n_days_post=1):
 
 def historical_labs(lab_df, n_days=14):
     """
-    Filter the lab_df dataframe to include only the historical lab records that are older than n_days.
+    Filter the lab_df dataframe to include only the historical lab records
+    that are older than n_days.
 
     Parameters:
     lab_df (pandas.DataFrame): The dataframe containing lab records.
-    n_days (int): The number of days to consider for historical lab records. Default is 14.
+    n_days (int): The number of days to consider for historical lab records.
+    Default is 14.
 
     Returns:
     pandas.DataFrame: The filtered dataframe containing historical lab records.
@@ -100,7 +106,7 @@ def write_report(current_labs, historical_labs, dir, extra_strings=None):
     current_case_len = len(current_labs[current_labs["outcome"] == 1])
     with open(dir / "colonflag/historical_labs_report.txt", "w") as f:
         f.write(
-            "Number of patients with measurements in current_labs: {} (total) {} (control) {} (case)\n".format(
+            "Number of patients with measurements in current_labs:{} (total) {} (control) {} (case)\n".format(
                 current_len,
                 current_control_len,
                 current_case_len,
