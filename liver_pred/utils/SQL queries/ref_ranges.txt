@@ -1,0 +1,12 @@
+select refs.itemid,
+d.label,
+d.fluid,
+refs.ref_range_upper,
+refs.ref_range_lower
+from mimiciv_hosp.d_labitems d join
+(SELECT itemid, MAX(ref_range_upper) as ref_range_upper,
+ MIN(ref_range_lower) as ref_range_lower
+ from mimiciv_hosp.labevents
+ GROUP BY itemid) as refs
+ on d.itemid = refs.itemid
+ 

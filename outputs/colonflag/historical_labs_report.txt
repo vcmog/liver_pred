@@ -1,0 +1,3 @@
+Number of patients with measurements in current_labs:3780 (total) 2829 (control) 951 (case)
+Number of patients with measurements in historical_labs: 3780 (total) 2829 (control) 951 (case)
+Percentages of patients with historical_labs measurements: 100.00% (total) 100.00% (control) 100.00% (case)

@@ -290,13 +290,24 @@ def generate_features(
 
 
 def create_array_for_CNN(processed_labs, current_window_postindex, max_history=None):
+    """
+    Create a 3D array for Convolutional Neural Network (CNN) input.
 
+    Args:
+        processed_labs (DataFrame): Processed laboratory measurements.
+        current_window_postindex (int): Current window post index.
+        max_history (int, optional): Maximum history to consider. Defaults to None.
+
+    Returns:
+        array_3d (ndarray): 3D array with dimensions (subject_id, blood_test_label, difference).
+
+    """
     binned_df = bin_measurements(processed_labs)
 
-    binned_df["weekly_differences"] = int(round(binned_df["differences"] // 7))
-    binned_df = binned_df(binned_df["weekly_differences"] > -3)
+    binned_df["weekly_differences"] = round(binned_df["differences"] // 7, 0)
+    binned_df = binned_df[binned_df["weekly_differences"] > -3]
     if max_history:
-        binned_df = binned_df(binned_df["weekly_differences"] < max_history)
+        binned_df = binned_df[binned_df["weekly_differences"] < max_history]
 
     pivot_df = binned_df.reset_index().pivot_table(
         index=["subject_id", "weekly_differences"], columns="label", values="valuenum"
@@ -306,7 +317,6 @@ def create_array_for_CNN(processed_labs, current_window_postindex, max_history=N
 
     # Get all possible differences and blood test labels
     all_differences = range(0, int(max(binned_df["weekly_differences"])) + 1)
-    all_blood_test_labels = pivot_df.columns.unique()
 
     # Create a MultiIndex with all possible combinations of difference and subject_id
     multiindex = pd.MultiIndex.from_product(

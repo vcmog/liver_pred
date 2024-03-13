@@ -1,0 +1,870 @@
+,label,ref_range_lower,ref_range_upper,centre
+0,"Ascites Albumin, Ascites",,,
+1,"Ascites Amylase, Ascites",,,
+2,Ascites Atypical Lymphocytes,0.0,0.0,0.0
+3,Ascites Bands,0.0,0.0,0.0
+4,Ascites Basophils,0.0,0.0,0.0
+5,"Ascites Bicarbonate, Ascites",,,
+6,"Ascites Bilirubin, Total, Ascites",,,
+7,Ascites Blasts,0.0,0.0,0.0
+8,"Ascites Chloride, Ascites",,,
+9,"Ascites Cholesterol, Ascites",,,
+10,"Ascites Creatinine, Ascites",,,
+11,Ascites Eosinophils,0.0,0.0,0.0
+12,"Ascites Glucose, Ascites",,,
+13,"Ascites Hematocrit, Ascites",0.0,0.0,0.0
+14,Ascites Hyperseg,0.0,0.0,0.0
+15,"Ascites Lactate Dehydrogenase, Ascites",,,
+16,"Ascites Lipase, Ascites",,,
+17,Ascites Lymphocytes,0.0,0.0,0.0
+18,Ascites Macrophage,0.0,0.0,0.0
+19,Ascites Mesothelial Cell,0.0,0.0,0.0
+20,Ascites Metamyelocytes,0.0,0.0,0.0
+21,"Ascites Miscellaneous, Ascites",,,
+22,Ascites Monocytes,0.0,0.0,0.0
+23,Ascites Myelocytes,0.0,0.0,0.0
+24,Ascites Nucleated RBC,0.0,0.0,0.0
+25,"Ascites Osmolality, Ascites",,,
+26,Ascites Other,0.0,0.0,0.0
+27,Ascites Plasma,0.0,0.0,0.0
+28,Ascites Polys,0.0,0.0,0.0
+29,"Ascites Potassium, Ascites",,,
+30,Ascites Promyelocytes,0.0,0.0,0.0
+31,"Ascites RBC, Ascites",0.0,0.0,0.0
+32,"Ascites Sodium, Ascites",,,
+33,"Ascites Total Nucleated Cells, Ascites",0.0,0.0,0.0
+34,"Ascites Total Protein, Ascites",,,
+35,"Ascites Triglycerides, Ascites",,,
+36,"Ascites Urea Nitrogen, Ascites",,,
+37,Ascites Voided Specimen,,,
+38,Ascites Young,0.0,0.0,0.0
+39,Blood % Hemoglobin A1c,4.0,6.0,5.0
+40,Blood 25-OH Vitamin D,30.0,60.0,45.0
+41,Blood ADP,,,
+42,Blood ANCA Titer,,,
+43,Blood ARCH-1,,,
+44,Blood Absolute A1c,,,
+45,Blood Absolute Basophil Count,0.0,0.2,0.1
+46,Blood Absolute CD3 Count,578.0,1850.0,1214.0
+47,Blood Absolute CD4 Count,350.0,1100.0,725.0
+48,Blood Absolute CD8 Count,193.0,685.0,439.0
+49,Blood Absolute Eosinophil Count,0.02,0.54,0.28
+50,Blood Absolute Hemoglobin,,,
+51,Blood Absolute Lymphocyte Count,1.0,3.8,2.4
+52,Blood Absolute Monocyte Count,0.2,1.6,0.9
+53,Blood Absolute Neutrophil Count,1.6,7.5,4.55
+54,Blood Acanthocytes,,,
+55,Blood Acetaminophen,5.0,30.0,17.5
+56,Blood Acetone,,,
+57,Blood Alanine Aminotransferase (ALT),0.0,40.0,20.0
+58,Blood Albumin,3.4,5.2,4.3
+59,Blood Alkaline Phosphatase,35.0,130.0,82.5
+60,Blood Alpha-Fetoprotein,0.0,8.7,4.35
+61,Blood Alveolar-arterial Gradient,,,
+62,Blood Amikacin,20.0,25.0,22.5
+63,Blood Ammonia,10.0,60.0,35.0
+64,Blood Amylase,0.0,100.0,50.0
+65,Blood Anion Gap,8.0,20.0,14.0
+66,Blood Anisocytosis,,,
+67,Blood Anti-DGP (IgA/IgG),0.0,19.0,9.5
+68,"Blood Anti-Gliadin Antibody, IgA",0.0,19.0,9.5
+69,Blood Anti-Mitochondrial Antibody,,,
+70,Blood Anti-Neutrophil Cytoplasmic Antibody,,,
+71,Blood Anti-Nuclear Antibody,,,
+72,"Blood Anti-Nuclear Antibody, Titer",,,
+73,Blood Anti-Parietal Cell Antibody,,,
+74,Blood Anti-Smooth Muscle Antibody,,,
+75,Blood Anti-Thyroglobulin Antibodies,0.0,40.0,20.0
+76,Blood Anticardiolipin Antibody IgG,0.0,15.0,7.5
+77,Blood Anticardiolipin Antibody IgM,0.0,12.5,6.25
+78,Blood Antithrombin,69.0,130.0,99.5
+79,Blood Arachadonic Acid,,,
+80,Blood Asparate Aminotransferase (AST),0.0,40.0,20.0
+81,Blood Assist/Control,,,
+82,Blood Atypical Lymphocytes,0.0,0.0,0.0
+83,Blood Bands,0.0,5.0,2.5
+84,Blood Barbiturate Screen,,,
+85,Blood Base Excess,,,
+86,Blood Basophilic Stippling,,,
+87,Blood Basophils,0.0,2.0,1.0
+88,Blood Benzodiazepine Screen,,,
+89,Blood Beta Hydroxybutyrate,0.0,0.4,0.2
+90,Blood Beta-2 Microglobulin,0.8,2.2,1.5
+91,Blood Bicarbonate,22.0,32.0,27.0
+92,"Blood Bilirubin, Direct",0.0,0.3,0.15
+93,"Blood Bilirubin, Indirect",,,
+94,"Blood Bilirubin, Total",0.0,1.5,0.75
+95,Blood Bite Cells,,,
+96,Blood Blasts,0.0,0.0,0.0
+97,Blood Bleeding Time,2.0,8.0,5.0
+98,Blood Blood Parasite Smear,,,
+99,Blood Blue Top Hold,,,
+100,Blood Blue Top Hold Frozen,,,
+101,Blood C-Reactive Protein,0.0,5.0,2.5
+102,Blood C3,90.0,180.0,135.0
+103,Blood C4,10.0,40.0,25.0
+104,Blood CA 19-9,0.0,35.0,17.5
+105,Blood CA-125,0.0,35.0,17.5
+106,Blood CD 1a,,,
+107,Blood CD10,,,
+108,Blood CD103,,,
+109,Blood CD117,,,
+110,Blood CD11c,,,
+111,Blood CD13,,,
+112,Blood CD138,,,
+113,Blood CD14,,,
+114,Blood CD15,,,
+115,Blood CD15/56,,,
+116,Blood CD16,,,
+117,Blood CD16/56 Absolute Count,,,
+118,Blood CD16/56%,,,
+119,Blood CD19,,,
+120,Blood CD19 %,,,
+121,Blood CD19 Absolute Count,,,
+122,Blood CD2,,,
+123,Blood CD20,,,
+124,Blood CD20 %,,,
+125,Blood CD20 Absolute Count,,,
+126,Blood CD22,,,
+127,Blood CD23,,,
+128,Blood CD25,,,
+129,Blood CD3 %,,,
+130,Blood CD3 Absolute Count,,,
+131,"Blood CD3 Cells, Percent",,,
+132,Blood CD33,,,
+133,Blood CD34,,,
+134,Blood CD38,,,
+135,"Blood CD4 Cells, Percent",,,
+136,Blood CD4/CD8 Ratio,0.84,3.0,1.92
+137,Blood CD41,,,
+138,Blood CD45,,,
+139,Blood CD5,,,
+140,Blood CD5 %,,,
+141,Blood CD5 Absolute Count,,,
+142,Blood CD55,,,
+143,Blood CD56,,,
+144,Blood CD56 %,,,
+145,Blood CD56 Absolute Count,,,
+146,Blood CD57,,,
+147,Blood CD59,,,
+148,Blood CD64,,,
+149,Blood CD7,,,
+150,Blood CD71,,,
+151,"Blood CD8 Cells, Percent",,,
+152,Blood CK-MB Index,0.0,6.0,3.0
+153,Blood CMV IgG Ab,,,
+154,Blood CMV IgG Ab Value,,,
+155,Blood CMV IgM Ab,,,
+156,Blood CMV Interpretation,,,
+157,"Blood Calcium, Total",8.4,10.8,9.6
+158,"Blood Calculated Bicarbonate, Whole Blood",21.0,30.0,25.5
+159,Blood Calculated Free Testosterone,0.57,185.0,92.78
+160,Blood Calculated TBG,0.8,1.3,1.05
+161,Blood Calculated Thyroxine (T4) Index,4.4,11.4,7.9
+162,Blood Calculated Total CO2,21.0,30.0,25.5
+163,Blood Cancer Antigen 27.29,0.0,39.0,19.5
+164,Blood Carbamazepine,4.0,12.0,8.0
+165,Blood Carboxyhemoglobin,0.0,5.0,2.5
+166,Blood Carcinoembyronic Antigen (CEA),0.0,4.0,2.0
+167,Blood Centromere,,,
+168,Blood Chloride,96.0,108.0,102.0
+169,"Blood Chloride, Whole Blood",96.0,112.0,104.0
+170,Blood Cholesterol Ratio (Total/HDL),,,
+171,"Blood Cholesterol, HDL",41.0,999.0,520.0
+172,"Blood Cholesterol, LDL, Calculated",0.0,129.0,64.5
+173,"Blood Cholesterol, LDL, Measured",0.0,129.0,64.5
+174,"Blood Cholesterol, Total",0.0,199.0,99.5
+175,Blood Collagen,,,
+176,Blood Cortisol,2.0,20.0,11.0
+177,Blood Creatine Kinase (CK),26.0,322.0,174.0
+178,"Blood Creatine Kinase, MB Isoenzyme",0.0,10.0,5.0
+179,Blood Creatinine,0.4,1.2,0.8
+180,"Blood Creatinine, Whole Blood",0.4,1.2,0.8
+181,Blood Cryoglobulin,,,
+182,Blood Cyclosporin,100.0,400.0,250.0
+183,Blood Cytomegalovirus Viral Load,0.0,0.0,0.0
+184,Blood D-Dimer,0.0,500.0,250.0
+185,Blood DHEA-Sulfate,9.4,492.0,250.7
+186,Blood Digoxin,0.6,2.0,1.3
+187,Blood Double Stranded DNA,,,
+188,Blood EDTA Hold,,,
+189,Blood EE1,,,
+190,Blood EE2,,,
+191,Blood EE3,,,
+192,Blood EE5,,,
+193,Blood EE6,,,
+194,Blood EE7,,,
+195,Blood Echinocytes,,,
+196,Blood Elliptocytes,,,
+197,Blood Envelope Cells,,,
+198,Blood Eosinophil Count,0.0,440.0,220.0
+199,Blood Eosinophils,0.0,7.0,3.5
+200,Blood Epinepherine,,,
+201,Blood Epstein-Barr Virus  EBNA IgG Ab,,,
+202,Blood Epstein-Barr Virus EBNA IgG Ab,,,
+203,Blood Epstein-Barr Virus IgG Ab Value,,,
+204,Blood Epstein-Barr Virus IgM Ab Value,,,
+205,Blood Epstein-Barr Virus Interpretation,,,
+206,Blood Epstein-Barr Virus VCA IgG Ab,,,
+207,Blood Epstein-Barr Virus VCA IgM Ab,,,
+208,Blood Estimated GFR (MDRD equation),,,
+209,Blood Estradiol,0.0,500.0,250.0
+210,Blood Ethanol,10.0,10.0,10.0
+211,Blood Ethylene Glycol,10.0,10.0,10.0
+212,Blood FMC-7,,,
+213,Blood Factor II,50.0,150.0,100.0
+214,Blood Factor IX,50.0,200.0,125.0
+215,Blood Factor IX Inhibitor,0.0,0.03,0.02
+216,Blood Factor V,50.0,150.0,100.0
+217,Blood Factor VII,50.0,180.0,115.0
+218,Blood Factor VIII,50.0,200.0,125.0
+219,Blood Factor VIII Inhibitor,0.0,0.03,0.02
+220,Blood Factor X,50.0,160.0,105.0
+221,Blood Factor XI,50.0,180.0,115.0
+222,Blood Factor XII,40.0,200.0,120.0
+223,Blood Factor XIII,,,
+224,Blood Ferritin,13.0,400.0,206.5
+225,Blood Fetal Hemoglobin,,,
+226,Blood Fibrin Degradation Products,0.0,10.0,5.0
+227,"Blood Fibrinogen, Functional",150.0,400.0,275.0
+228,Blood Folate,2.0,20.0,11.0
+229,Blood Follicle Stimulating Hormone,2.0,12.0,7.0
+230,Blood Fragmented Cells,,,
+231,Blood Free Calcium,1.12,1.32,1.22
+232,Blood Free Kappa,3.3,19.4,11.35
+233,Blood Free Kappa/Free Lambda Ratio,0.26,1.65,0.96
+234,Blood Free Lambda,5.7,26.3,16.0
+235,"Blood G6PD, Qualitative",,,
+236,Blood Gamma Glutamyltransferase,5.0,61.0,33.0
+237,Blood Gentamicin,5.0,10.0,7.5
+238,Blood Globulin,2.0,4.0,3.0
+239,Blood Glucose,60.0,110.0,85.0
+240,Blood Glyco A,,,
+241,Blood Granulocyte Count,2200.0,8250.0,5225.0
+242,Blood Gray Top Hold (plasma),,,
+243,Blood Green Top Hold (plasma),,,
+244,Blood H,0.0,40.0,20.0
+245,Blood H. pylori IgG Ab,,,
+246,Blood H. pylori IgG Ab Value,,,
+247,Blood H/O Smear,,,
+248,Blood HIT-Ab Interpreted Result,,,
+249,Blood HIT-Ab Numerical Result,0.0,0.9,0.45
+250,Blood HIV 1 Ab Confirmation,,,
+251,Blood HIV 1 Viral Load,0.0,0.0,0.0
+252,Blood HIV 2 Ab Confirmation,,,
+253,Blood HIV Screen,,,
+254,Blood HLA-DR,,,
+255,Blood HPE1,,,
+256,Blood HPE2,,,
+257,Blood HPE3,,,
+258,Blood HPE4,,,
+259,Blood HPE5,,,
+260,Blood HPE6,,,
+261,Blood HPE7,,,
+262,Blood HPE8,,,
+263,Blood HPE9,,,
+264,Blood Haptoglobin,30.0,200.0,115.0
+265,Blood Heinz Body Prep,,,
+266,Blood Hematocrit,34.0,52.0,43.0
+267,"Blood Hematocrit, Calculated",,,
+268,Blood Hemoglobin,11.2,18.0,14.6
+269,Blood Hemoglobin A2,2.2,3.3,2.75
+270,Blood Hemoglobin C,0.0,0.0,0.0
+271,Blood Hemoglobin F,0.0,2.0,1.0
+272,Blood Hemoglobin Other,,,
+273,"Blood Hemoglobin, Calculated",11.2,17.5,14.35
+274,Blood Hemogloblin A,96.8,97.8,97.3
+275,Blood Hemogloblin S,0.0,0.0,0.0
+276,Blood Heparin,0.3,0.7,0.5
+277,"Blood Heparin, LMW",0.6,1.0,0.8
+278,Blood Hepatitis A Virus Antibody,,,
+279,Blood Hepatitis A Virus IgM Antibody,,,
+280,"Blood Hepatitis B Core Antibody, IgM",,,
+281,Blood Hepatitis B Surface Antibody,,,
+282,Blood Hepatitis B Surface Antigen,,,
+283,Blood Hepatitis B Viral Load,0.0,0.0,0.0
+284,Blood Hepatitis B Virus Core Antibody,,,
+285,Blood Hepatitis C Viral Load,0.0,0.0,0.0
+286,Blood Hepatitis C Virus Antibody,,,
+287,Blood High-Sensitivity CRP,,,
+288,Blood Homocysteine,0.0,15.0,7.5
+289,Blood Howell-Jolly Bodies,,,
+290,Blood Human Chorionic Gonadotropin,0.0,100000.0,50000.0
+291,Blood Hypersegmented Neutrophils,0.0,0.0,0.0
+292,Blood Hypochromia,,,
+293,Blood I,0.0,10.0,5.0
+294,Blood INR(PT),0.9,1.1,1.0
+295,Blood Immature Granulocytes,0.0,0.8,0.4
+296,Blood Immunofixation,,,
+297,Blood Immunoglobulin A,70.0,400.0,235.0
+298,Blood Immunoglobulin G,700.0,1600.0,1150.0
+299,Blood Immunoglobulin M,40.0,230.0,135.0
+300,Blood Immunophenotyping,,,
+301,Blood Inhibitor Screen,,,
+302,Blood Inpatient Hematology/Oncology Smear,,,
+303,Blood Intubated,,,
+304,Blood Iron,30.0,160.0,95.0
+305,"Blood Iron Binding Capacity, Total",260.0,470.0,365.0
+306,Blood K (GREEN),3.3,5.1,4.2
+307,Blood Kappa,,,
+308,Blood L,0.0,60.0,30.0
+309,Blood LUC,,,
+310,Blood Lactate,0.5,2.0,1.25
+311,Blood Lactate Dehydrogenase (LD),94.0,250.0,172.0
+312,Blood Lambda,,,
+313,Blood Large Platelets,,,
+314,Blood Leukocyte Alkaline Phosphatase,30.0,130.0,80.0
+315,Blood Light Green Top Hold,,,
+316,Blood Lipase,0.0,60.0,30.0
+317,Blood Lithium,0.5,1.5,1.0
+318,Blood Lupus Anticoagulant,,,
+319,Blood Luteinizing Hormone,2.0,100.0,51.0
+320,Blood Lyme C6 Ab,,,
+321,Blood Lyme G and M Value,,,
+322,Blood Lymphocytes,7.0,59.0,33.0
+323,"Blood Lymphocytes, Percent",18.0,53.0,35.5
+324,Blood MCH,26.0,32.0,29.0
+325,Blood MCHC,31.0,37.0,34.0
+326,Blood MCV,82.0,98.0,90.0
+327,Blood Macro Prolactin,,,
+328,Blood MacroOvalocytes,,,
+329,Blood Macrocytes,,,
+330,Blood Magnesium,1.5,2.6,2.05
+331,Blood Metamyelocytes,0.0,0.0,0.0
+332,Blood Methemoglobin,0.0,2.0,1.0
+333,Blood Methotrexate,0.0,0.2,0.1
+334,Blood Microcytes,,,
+335,Blood Monocyte Count,80.0,1210.0,645.0
+336,Blood Monocytes,2.0,13.0,7.5
+337,"Blood Monospot, Rapid Antigen",,,
+338,Blood Mumps IgG Ab,,,
+339,Blood Mumps IgG Ab Value,,,
+340,Blood Myelocytes,0.0,0.0,0.0
+341,Blood N-Acetylprocainamide (NAPA),0.0,30.0,15.0
+342,Blood NTproBNP,0.0,852.0,426.0
+343,Blood Neutrophils,30.0,77.0,53.5
+344,Blood Nucleated Red Cells,0.0,0.0,0.0
+345,Blood O2 Flow,,,
+346,"Blood Osmolality, Measured",275.0,310.0,292.5
+347,Blood Osmotic Fragility,,,
+348,Blood Other Cells,0.0,0.0,0.0
+349,Blood Ovalocytes,,,
+350,Blood Oxygen,,,
+351,Blood Oxygen Saturation,,,
+352,Blood P50 of Hemoglobin,22.0,30.0,26.0
+353,Blood PAN3,,,
+354,Blood PEEP,,,
+355,Blood PT,9.4,13.4,11.4
+356,Blood PTT,22.0,36.5,29.25
+357,Blood Pappenheimer Bodies,,,
+358,Blood Parathyroid Hormone,15.0,65.0,40.0
+359,Blood Pencil Cells,,,
+360,Blood Phenobarbital,10.0,40.0,25.0
+361,Blood Phenytoin,10.0,20.0,15.0
+362,"Blood Phenytoin, Free",1.0,2.0,1.5
+363,"Blood Phenytoin, Percent Free",6.0,16.0,11.0
+364,Blood Phosphate,2.7,4.5,3.6
+365,Blood Plasma Cells,0.0,0.0,0.0
+366,Blood Platelet Clumps,,,
+367,Blood Platelet Count,150.0,440.0,295.0
+368,Blood Platelet Smear,,,
+369,Blood Poikilocytosis,,,
+370,Blood Polychromasia,,,
+371,Blood Potassium,3.3,5.4,4.35
+372,"Blood Potassium, Whole Blood",3.3,5.4,4.35
+373,Blood Problem Specimen,,,
+374,Blood Procainamide,4.0,10.0,7.0
+375,Blood Prolactin,4.0,23.0,13.5
+376,Blood Promyelocytes,0.0,0.0,0.0
+377,Blood Prostate Specific Antigen,0.0,4.0,2.0
+378,"Blood Protein C, Antigen",70.0,140.0,105.0
+379,"Blood Protein C, Functional",67.0,170.0,118.5
+380,Blood Protein Electrophoresis,,,
+381,"Blood Protein S, Antigen",70.0,140.0,105.0
+382,"Blood Protein S, Functional",50.0,150.0,100.0
+383,"Blood Protein, Total",4.6,8.3,6.45
+384,Blood Quantitative G6PD,6.0,12.4,9.2
+385,Blood RBC Morphology,,,
+386,Blood RDW,10.5,15.5,13.0
+387,Blood RDW-SD,35.1,46.3,40.7
+388,Blood RFXLDLM,,,
+389,Blood RUBIgGV,,,
+390,Blood Rapamycin,5.0,15.0,10.0
+391,Blood Red Blood Cell Fragments,,,
+392,Blood Red Blood Cells,3.9,6.2,5.05
+393,Blood Red Top Hold,,,
+394,Blood Reflex Confirmatory Hepatitis C Viral Load,0.0,0.0,0.0
+395,Blood Reflex HIV Confirmation,,,
+396,Blood Reptilase Time,15.0,25.0,20.0
+397,Blood Reptilase Time Control,,,
+398,Blood Required O2,,,
+399,"Blood Reticulocyte Count, Absolute",0.02,198.4,99.21
+400,"Blood Reticulocyte Count, Automated",0.4,3.2,1.8
+401,"Blood Reticulocyte Count, Manual",0.4,2.0,1.2
+402,Blood Rheumatoid Factor,0.0,14.0,7.0
+403,Blood Ristocetin,,,
+404,Blood Rouleaux,,,
+405,Blood Rubella IgG Ab,,,
+406,Blood Rubeola IgG Ab,,,
+407,Blood Rubeola IgG Ab Value,,,
+408,Blood SCT - Confirmation,0.0,1.16,0.58
+409,Blood SCT - Normalized Ratio,0.0,1.16,0.58
+410,Blood SCT - Screen,0.0,1.16,0.58
+411,Blood STX1,,,
+412,Blood STX2,,,
+413,Blood STX3,,,
+414,Blood STX4,,,
+415,Blood STX5,,,
+416,Blood STX6,,,
+417,Blood Salicylate,2.0,25.0,13.5
+418,Blood Schistocytes,,,
+419,Blood Sedimentation Rate,0.0,20.0,10.0
+420,Blood Serum Viscosity,1.4,1.8,1.6
+421,Blood Sex Hormone Binding Globulin,14.0,110.0,62.0
+422,Blood Sickle Cell Preparation,,,
+423,Blood Sickle Cells,,,
+424,Blood Sodium,133.0,147.0,140.0
+425,"Blood Sodium, Whole Blood",133.0,148.0,140.5
+426,Blood Specimen Type,,,
+427,Blood Spherocytes,,,
+428,Blood Stomatocyte,,,
+429,Blood TCR Alpha-Beta,,,
+430,Blood TCR Gamma-Delta,,,
+431,Blood Target Cells,,,
+432,Blood TdT,,,
+433,Blood Teardrop Cells,,,
+434,Blood Temperature,,,
+435,Blood Testosterone,6.0,800.0,403.0
+436,"Blood Testosterone, Free",0.0,27.0,13.5
+437,Blood Theophylline,10.0,20.0,15.0
+438,Blood Thrombin,10.0,22.0,16.0
+439,Blood Thyroglobulin,0.0,55.0,27.5
+440,Blood Thyroid Peroxidase Antibodies,0.0,35.0,17.5
+441,Blood Thyroid Stimulating Hormone,0.27,5.0,2.64
+442,Blood Thyroxine (T4),4.6,12.0,8.3
+443,"Blood Thyroxine (T4), Free",0.93,1.7,1.32
+444,Blood Tidal Volume,,,
+445,"Blood Tissue Transglutaminase Ab, IgA",0.0,19.0,9.5
+446,Blood Tobramycin,6.0,10.0,8.0
+447,Blood Total CO2,22.0,32.0,27.0
+448,Blood Toxoplasma IgG Ab,,,
+449,Blood Toxoplasma IgG Ab Value,,,
+450,Blood Toxoplasma IgM Ab,,,
+451,Blood Toxoplasma IgM Ab Value,,,
+452,Blood Toxoplasma Interpretation,,,
+453,Blood Transferrin,200.0,360.0,280.0
+454,Blood Treponema pallidum (Syphilis) Ab,,,
+455,Blood Treponema pallidum (syphilis) value,,,
+456,Blood Tricyclic Antidepressant Screen,,,
+457,Blood Triglycerides,0.0,149.0,74.5
+458,Blood Triiodothyronine (T3),80.0,200.0,140.0
+459,Blood Troponin I,0.0,0.08,0.04
+460,Blood Troponin T,0.0,0.01,0.0
+461,Blood Uptake Ratio,0.77,1.25,1.01
+462,Blood Urea Nitrogen,6.0,20.0,13.0
+463,Blood Uric Acid,2.4,7.0,4.7
+464,Blood VZV IgG Ab,,,
+465,Blood VZV IgG Ab Value,,,
+466,Blood Valproic Acid,50.0,100.0,75.0
+467,Blood Vancomycin,10.0,20.0,15.0
+468,Blood Ventilation Rate,,,
+469,Blood Ventilator,,,
+470,Blood Vitamin B12,240.0,900.0,570.0
+471,Blood Voided Specimen,,,
+472,Blood Von Willebrand Factor Activity,50.0,200.0,125.0
+473,Blood Von Willebrand Factor Antigen,50.0,180.0,115.0
+474,Blood WBC Count,4.0,11.0,7.5
+475,Blood White Blood Cells,4.0,11.0,7.5
+476,Blood Young Cells,0.0,0.0,0.0
+477,Blood dRVVT - Confirmation,0.0,1.2,0.6
+478,Blood dRVVT - Normalized Ratio,0.0,1.2,0.6
+479,Blood dRVVT - Screen,0.0,1.2,0.6
+480,Blood eAG,68.0,126.0,97.0
+481,Blood pCO2,35.0,45.0,40.0
+482,Blood pH,7.35,7.45,7.4
+483,Blood pO2,85.0,105.0,95.0
+484,Blood tacroFK,5.0,20.0,12.5
+485,Blood wbcp,,,
+486,Bone Marrow CD 1a,,,
+487,Bone Marrow CD10,,,
+488,Bone Marrow CD103,,,
+489,Bone Marrow CD117,,,
+490,Bone Marrow CD11c,,,
+491,Bone Marrow CD13,,,
+492,Bone Marrow CD138,,,
+493,Bone Marrow CD14,,,
+494,Bone Marrow CD15,,,
+495,Bone Marrow CD16,,,
+496,Bone Marrow CD16/56,,,
+497,Bone Marrow CD19,,,
+498,Bone Marrow CD2,,,
+499,Bone Marrow CD20,,,
+500,Bone Marrow CD22,,,
+501,Bone Marrow CD23,,,
+502,Bone Marrow CD25,,,
+503,Bone Marrow CD3,,,
+504,Bone Marrow CD33,,,
+505,Bone Marrow CD34,,,
+506,Bone Marrow CD38,,,
+507,Bone Marrow CD4,,,
+508,Bone Marrow CD41,,,
+509,Bone Marrow CD45,,,
+510,Bone Marrow CD5,,,
+511,Bone Marrow CD55,,,
+512,Bone Marrow CD56,,,
+513,Bone Marrow CD57,,,
+514,Bone Marrow CD59,,,
+515,Bone Marrow CD64,,,
+516,Bone Marrow CD7,,,
+517,Bone Marrow CD71,,,
+518,Bone Marrow CD8,,,
+519,Bone Marrow FMC-7,,,
+520,Bone Marrow Glyco A,,,
+521,Bone Marrow HLA-DR,,,
+522,Bone Marrow Immunophenotyping,,,
+523,Bone Marrow Iron Stain,,,
+524,Bone Marrow Kappa,,,
+525,Bone Marrow Lambda,,,
+526,Bone Marrow TCR Alpha-Beta,,,
+527,Bone Marrow TCR Gamma-Delta,,,
+528,Bone Marrow TdT,,,
+529,Bone Marrow Wright Giemsa,,,
+530,Cerebrospinal Fluid <Albumin>,,,
+531,Cerebrospinal Fluid Atypical Lymphocytes,,,
+532,Cerebrospinal Fluid Bands,,,
+533,Cerebrospinal Fluid Basophils,,,
+534,"Cerebrospinal Fluid Bilirubin, Total, CSF",,,
+535,Cerebrospinal Fluid Blasts,,,
+536,"Cerebrospinal Fluid Chloride, CSF",,,
+537,Cerebrospinal Fluid Eosinophils,,,
+538,"Cerebrospinal Fluid Glucose, CSF",,,
+539,Cerebrospinal Fluid HIV 1 Viral Load,0.0,0.0,0.0
+540,"Cerebrospinal Fluid Hematocrit, CSF",0.0,0.0,0.0
+541,Cerebrospinal Fluid Immunophenotyping,,,
+542,"Cerebrospinal Fluid Lactate Dehydrogenase, CSF",,,
+543,Cerebrospinal Fluid Lining Cell,,,
+544,Cerebrospinal Fluid Lymphs,,,
+545,Cerebrospinal Fluid Macrophage,,,
+546,Cerebrospinal Fluid Mesothelial cells,,,
+547,Cerebrospinal Fluid Metamyelocytes,,,
+548,"Cerebrospinal Fluid Miscellaneous, CSF",,,
+549,Cerebrospinal Fluid Monocytes,,,
+550,Cerebrospinal Fluid Myelocytes,,,
+551,Cerebrospinal Fluid NRBC,,,
+552,Cerebrospinal Fluid Other,,,
+553,"Cerebrospinal Fluid PEP, CSF",,,
+554,Cerebrospinal Fluid Plasma,,,
+555,Cerebrospinal Fluid Polys,,,
+556,Cerebrospinal Fluid Promyelocytes,,,
+557,"Cerebrospinal Fluid RBC, CSF",0.0,5.0,2.5
+558,"Cerebrospinal Fluid Total Nucleated Cells, CSF",0.0,5.0,2.5
+559,"Cerebrospinal Fluid Total Protein, CSF",15.0,45.0,30.0
+560,Cerebrospinal Fluid Voided Specimen,,,
+561,Cerebrospinal Fluid Young,,,
+562,"Joint Fluid Albumin, Joint Fluid",,,
+563,"Joint Fluid Amylase, Joint Fluid",,,
+564,Joint Fluid Atypical Lymphocytes,0.0,0.0,0.0
+565,Joint Fluid Bands,0.0,0.0,0.0
+566,Joint Fluid Basophils,0.0,0.0,0.0
+567,Joint Fluid Blasts,0.0,0.0,0.0
+568,"Joint Fluid Creatinine, Joint Fluid",,,
+569,Joint Fluid Eosinophils,0.0,0.0,0.0
+570,"Joint Fluid Glucose, Joint Fluid",,,
+571,"Joint Fluid Hematocrit, Joint Fluid",0.0,0.0,0.0
+572,"Joint Fluid Joint Crystals, Birefringence",,,
+573,"Joint Fluid Joint Crystals, Comment",,,
+574,"Joint Fluid Joint Crystals, Location",,,
+575,"Joint Fluid Joint Crystals, Number",,,
+576,"Joint Fluid Joint Crystals, Shape",,,
+577,"Joint Fluid LD, Joint Fluid",,,
+578,Joint Fluid Lining Cell,,,
+579,Joint Fluid Lymphocytes,0.0,75.0,37.5
+580,Joint Fluid Macrophage,0.0,70.0,35.0
+581,Joint Fluid Mesothelial Cells,0.0,0.0,0.0
+582,Joint Fluid Metamyelocytes,0.0,0.0,0.0
+583,Joint Fluid Monocytes,0.0,70.0,35.0
+584,Joint Fluid Myelocytes,0.0,0.0,0.0
+585,Joint Fluid NRBC,0.0,0.0,0.0
+586,Joint Fluid Other,0.0,0.0,0.0
+587,Joint Fluid Plasma,0.0,0.0,0.0
+588,Joint Fluid Polys,0.0,25.0,12.5
+589,Joint Fluid Promyelocytes,0.0,0.0,0.0
+590,"Joint Fluid RBC, Joint Fluid",0.0,2000.0,1000.0
+591,"Joint Fluid Total Nucleated Cells, Joint",0.0,200.0,100.0
+592,"Joint Fluid Total Protein, Joint Fluid",,,
+593,"Joint Fluid Uric Acid, Joint Fluid",,,
+594,Joint Fluid Voided Specimen,,,
+595,"Other Body Fluid Albumin, Body Fluid",,,
+596,"Other Body Fluid Amylase, Body Fluid",,,
+597,Other Body Fluid Anat Path Hold,,,
+598,Other Body Fluid Atypical Lymphocytes,0.0,0.0,0.0
+599,Other Body Fluid Bands,0.0,0.0,0.0
+600,Other Body Fluid Basophils,0.0,0.0,0.0
+601,"Other Body Fluid Bicarbonate, Other Fluid",,,
+602,"Other Body Fluid Bilirubin, Total, Body Fluid",,,
+603,Other Body Fluid Blasts,0.0,0.0,0.0
+604,Other Body Fluid CD 1a,,,
+605,Other Body Fluid CD10,,,
+606,Other Body Fluid CD103,,,
+607,Other Body Fluid CD117,,,
+608,Other Body Fluid CD11c,,,
+609,Other Body Fluid CD13,,,
+610,Other Body Fluid CD138,,,
+611,Other Body Fluid CD14,,,
+612,Other Body Fluid CD15,,,
+613,Other Body Fluid CD16,,,
+614,Other Body Fluid CD16/56,,,
+615,Other Body Fluid CD19,,,
+616,Other Body Fluid CD2,,,
+617,Other Body Fluid CD20,,,
+618,Other Body Fluid CD22,,,
+619,Other Body Fluid CD23,,,
+620,Other Body Fluid CD25,,,
+621,Other Body Fluid CD3,,,
+622,Other Body Fluid CD33,,,
+623,Other Body Fluid CD34,,,
+624,Other Body Fluid CD38,,,
+625,Other Body Fluid CD4,,,
+626,Other Body Fluid CD4/CD8 Ratio,,,
+627,Other Body Fluid CD41,,,
+628,Other Body Fluid CD45,,,
+629,Other Body Fluid CD5,,,
+630,Other Body Fluid CD56,,,
+631,Other Body Fluid CD57,,,
+632,Other Body Fluid CD64,,,
+633,Other Body Fluid CD7,,,
+634,Other Body Fluid CD71,,,
+635,Other Body Fluid CD8,,,
+636,"Other Body Fluid Calcium, Body Fluid",,,
+637,Other Body Fluid Chlamydia trachomatis,,,
+638,"Other Body Fluid Chloride, Body Fluid",,,
+639,"Other Body Fluid Cholesterol, Body Fluid",,,
+640,"Other Body Fluid Creatinine, Body Fluid",,,
+641,Other Body Fluid Eosinophils,0.0,0.0,0.0
+642,Other Body Fluid FMC-7,,,
+643,Other Body Fluid FetalFN,,,
+644,"Other Body Fluid Glucose, Body Fluid",,,
+645,Other Body Fluid Glyco A,,,
+646,Other Body Fluid HLA-DR,,,
+647,"Other Body Fluid Hematocrit, Other Fluid",0.0,0.0,0.0
+648,Other Body Fluid Hypersegmented Neutrophils,0.0,0.0,0.0
+649,Other Body Fluid Immunophenotyping,,,
+650,Other Body Fluid Influenza A by PCR,,,
+651,"Other Body Fluid Influenza A, Rapid Antigen",,,
+652,Other Body Fluid Influenza B by PCR,,,
+653,"Other Body Fluid Influenza B, Rapid Antigen",,,
+654,Other Body Fluid Kappa,,,
+655,"Other Body Fluid LD, Body Fluid",,,
+656,Other Body Fluid Lambda,,,
+657,Other Body Fluid Lining Cell,,,
+658,"Other Body Fluid Lipase, Body Fluid",,,
+659,Other Body Fluid Lymphocytes,0.0,0.0,0.0
+660,Other Body Fluid MRSA PCR,,,
+661,Other Body Fluid Macrophage,0.0,0.0,0.0
+662,"Other Body Fluid Magnesium, Body Fluid",,,
+663,Other Body Fluid Mesothelial cells,0.0,0.0,0.0
+664,Other Body Fluid Metamyelocytes,0.0,0.0,0.0
+665,"Other Body Fluid Miscellaneous, Body Fluid",,,
+666,Other Body Fluid Monos,0.0,0.0,0.0
+667,Other Body Fluid Myelocytes,0.0,0.0,0.0
+668,Other Body Fluid NRBC,0.0,0.0,0.0
+669,Other Body Fluid Neisseria gonorrhoeae,,,
+670,"Other Body Fluid Osmolality, Body Fluid",,,
+671,Other Body Fluid Other Cell,0.0,0.0,0.0
+672,Other Body Fluid PAN1,,,
+673,Other Body Fluid PAN2,,,
+674,"Other Body Fluid Phosphate, Body Fluid",,,
+675,Other Body Fluid Plasma,0.0,0.0,0.0
+676,Other Body Fluid Polys,0.0,0.0,0.0
+677,"Other Body Fluid Potassium, Body Fluid",,,
+678,Other Body Fluid Promyelocytes,0.0,0.0,0.0
+679,"Other Body Fluid RBC, Other Fluid",0.0,0.0,0.0
+680,"Other Body Fluid Sodium, Body Fluid",,,
+681,Other Body Fluid Staph aureus PCR,,,
+682,"Other Body Fluid Strep A, Rapid Antigen",,,
+683,Other Body Fluid Surfactant/Albumin,,,
+684,Other Body Fluid TdT,,,
+685,"Other Body Fluid Total Nucleated Cells, Other",0.0,0.0,0.0
+686,"Other Body Fluid Total Protein, Body Fluid",,,
+687,Other Body Fluid Trichomonas vaginalis,,,
+688,Other Body Fluid Triglycer,,,
+689,"Other Body Fluid Urea Nitrogen, Body Fluid",,,
+690,Other Body Fluid Voided Specimen,,,
+691,Other Body Fluid Young,0.0,0.0,0.0
+692,"Other Body Fluid pCO2, Body Fluid",,,
+693,Other Body Fluid pH,,,
+694,"Other Body Fluid pO2, Body Fluid",,,
+695,"Pleural Albumin, Pleural",,,
+696,"Pleural Amylase, Pleural",,,
+697,Pleural Atypical Lymphocytes,0.0,0.0,0.0
+698,Pleural Bands,0.0,0.0,0.0
+699,Pleural Basophils,0.0,0.0,0.0
+700,"Pleural Bicarbonate, Pleural",,,
+701,"Pleural Bilirubin, Total, Pleural",,,
+702,Pleural Blasts,0.0,0.0,0.0
+703,"Pleural Chloride, Pleural",,,
+704,"Pleural Cholesterol, Pleural",,,
+705,"Pleural Creatinine, Pleural",,,
+706,Pleural Eosinophils,0.0,0.0,0.0
+707,"Pleural Glucose, Pleural",,,
+708,"Pleural Hematocrit, Pleural",0.0,0.0,0.0
+709,"Pleural Lactate Dehydrogenase, Pleural",,,
+710,"Pleural Lipase, Pleural",,,
+711,Pleural Lymphocytes,0.0,0.0,0.0
+712,Pleural Macrophages,0.0,0.0,0.0
+713,Pleural Mesothelial Cells,0.0,0.0,0.0
+714,Pleural Metamyelocytes,0.0,0.0,0.0
+715,"Pleural Miscellaneous, Pleural",,,
+716,Pleural Monos,0.0,0.0,0.0
+717,Pleural Myelocytes,0.0,0.0,0.0
+718,Pleural NRBC,0.0,0.0,0.0
+719,Pleural Other,0.0,0.0,0.0
+720,Pleural Plasma Cells,0.0,0.0,0.0
+721,Pleural Polys,0.0,0.0,0.0
+722,"Pleural Potassium, Pleural",,,
+723,Pleural Promyelocytes,0.0,0.0,0.0
+724,"Pleural RBC, Pleural",0.0,0.0,0.0
+725,"Pleural Sodium, Pleural",,,
+726,"Pleural Total Nucleated Cells, Pleural",0.0,0.0,0.0
+727,"Pleural Total Protein, Pleural",,,
+728,"Pleural Triglycerides, Pleural",,,
+729,Pleural Voided Specimen,,,
+730,Pleural Young Cells,0.0,0.0,0.0
+731,"Pleural proBNP, Pleural",,,
+732,"Stool Albumin, Stool",,,
+733,"Stool Bicarbonate, Stool",,,
+734,"Stool Blood, Occult",,,
+735,Stool C Diff Toxin Antigen Assay,,,
+736,Stool C. diff PCR,,,
+737,Stool CDT027,,,
+738,"Stool Chloride, Stool",,,
+739,Stool Norovirus Genogroup I,,,
+740,Stool Norovirus Genogroup II,,,
+741,"Stool Osmolality, Stool",,,
+742,"Stool Potassium, Stool",,,
+743,"Stool Sodium, Stool",,,
+744,Stool Voided Specimen,,,
+745,Urine 24 hr Calcium,,,
+746,Urine 24 hr Creatinine,,,
+747,Urine 24 hr Protein,,,
+748,"Urine Albumin, Urine",,,
+749,"Urine Albumin/Creatinine, Urine",0.0,30.0,15.0
+750,Urine Ammonium Biurate,,,
+751,Urine Amorphous Crystals,,,
+752,"Urine Amphetamine Screen, Urine",,,
+753,"Urine Amylase, Urine",,,
+754,"Urine Amylase/Creatinine Ratio, Urine",,,
+755,Urine Bacteria,,,
+756,"Urine Barbiturate Screen, Urine",,,
+757,"Urine Benzodiazepine Screen, Urine",,,
+758,"Urine Bicarbonate, Urine",,,
+759,Urine Bilirubin,,,
+760,Urine Bilirubin Crystals,,,
+761,Urine Blood,,,
+762,Urine Broad Casts,0.0,0.0,0.0
+763,Urine Calcium Carbonate Crystals,,,
+764,Urine Calcium Oxalate Crystals,,,
+765,Urine Calcium Phosphate Crystals,,,
+766,"Urine Calcium, Urine",,,
+767,Urine Cellular Cast,0.0,0.0,0.0
+768,Urine Chlamydia trachomatis,,,
+769,"Urine Chloride, Urine",,,
+770,Urine Cholesterol Crystals,,,
+771,"Urine Cocaine, Urine",,,
+772,Urine Creatinine Clearance,75.0,125.0,100.0
+773,"Urine Creatinine, Serum",,,
+774,"Urine Creatinine, Urine",,,
+775,Urine Cysteine Crystals,,,
+776,Urine Eosinophils,,,
+777,Urine Epithelial Casts,0.0,0.0,0.0
+778,Urine Epithelial Cells,,,
+779,"Urine Ethanol, Urine",,,
+780,Urine Fatty Casts,0.0,0.0,0.0
+781,Urine Fentanyl,,,
+782,Urine Free Fat,,,
+783,Urine Glucose,0.0,0.0,0.0
+784,"Urine Glucose, Urine",,,
+785,Urine Granular Casts,0.0,0.0,0.0
+786,"Urine HCG, Urine, Qualitative",,,
+787,Urine Hematocrit,,,
+788,Urine Hemosiderin,,,
+789,Urine Hyaline Casts,0.0,0.0,0.0
+790,Urine Hyphenated Yeast,,,
+791,"Urine Immunofixation, Urine",,,
+792,Urine Ketone,0.0,0.0,0.0
+793,Urine Length of Urine Collection,,,
+794,Urine Leucine Crystals,,,
+795,Urine Leukocytes,,,
+796,"Urine Magnesium, Urine",,,
+797,Urine Marijuana,,,
+798,"Urine Methadone, Urine",,,
+799,"Urine Myoglobin, Urine",,,
+800,Urine Neisseria gonorrhoeae,,,
+801,Urine Nitrite,,,
+802,Urine Non-squamous Epithelial Cells,,,
+803,Urine NonSquamous Epithelial Cell,,,
+804,"Urine Opiate Screen, Urine",,,
+805,"Urine Osmolality, Urine",,,
+806,Urine Oval Fat Body,,,
+807,Urine Oxycodone,,,
+808,Urine PAN1,,,
+809,Urine PAN2,,,
+810,"Urine Phosphate, Urine",,,
+811,Urine Porphobilinogen Screen,,,
+812,"Urine Potassium, Urine",,,
+813,"Urine Prot. Electrophoresis, Urine",,,
+814,Urine Protein,0.0,0.0,0.0
+815,Urine Protein/Creatinine Ratio,0.0,0.2,0.1
+816,Urine RBC,0.0,2.0,1.0
+817,Urine RBC Casts,0.0,0.0,0.0
+818,Urine RBC Clumps,,,
+819,Urine RFXUCU,,,
+820,"Urine Reducing Substances, Urine",0.0,0.0,0.0
+821,Urine Renal Epithelial Cells,,,
+822,"Urine Sodium, Urine",,,
+823,Urine Specific Gravity,1.001,1.035,1.02
+824,Urine Sperm,,,
+825,Urine Sulfonamides,,,
+826,Urine Total Collection Time,,,
+827,"Urine Total Protein, Urine",,,
+828,Urine Transitional Epithelial Cells,,,
+829,Urine Trichomonas,,,
+830,Urine Trichomonas vaginalis,,,
+831,Urine Triple Phosphate Crystals,,,
+832,Urine Tyrosine Crystals,,,
+833,Urine UCU1,,,
+834,Urine UCU2,,,
+835,Urine UTX1,,,
+836,Urine UTX10,,,
+837,Urine UTX2,,,
+838,Urine UTX3,,,
+839,Urine UTX4,,,
+840,Urine UTX5,,,
+841,Urine UTX6,,,
+842,Urine UTX7,,,
+843,Urine UTX9,,,
+844,Urine Uhold,,,
+845,"Urine Urea Nitrogen, Urine",,,
+846,Urine Uric Acid Crystals,,,
+847,"Urine Uric Acid, Urine",,,
+848,Urine Urine Appearance,,,
+849,"Urine Urine Casts, Other",0.0,0.0,0.0
+850,Urine Urine Color,,,
+851,Urine Urine Comments,,,
+852,Urine Urine Creatinine,,,
+853,"Urine Urine Crystals, Other",,,
+854,Urine Urine Fat Bodies,,,
+855,Urine Urine Mucous,,,
+856,Urine Urine Specimen Type,,,
+857,Urine Urine Volume,,,
+858,"Urine Urine Volume, Total",,,
+859,"Urine Urine tube, held",,,
+860,Urine Urobilinogen,0.2,1.0,0.6
+861,Urine Voided Specimen,,,
+862,Urine WBC,0.0,5.0,2.5
+863,Urine WBC Casts,0.0,0.0,0.0
+864,Urine WBC Clumps,,,
+865,Urine Waxy Casts,0.0,0.0,0.0
+866,Urine XUCU,,,
+867,Urine Yeast,,,
+868,Urine pH,5.0,8.0,6.5
