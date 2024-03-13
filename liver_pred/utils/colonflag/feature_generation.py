@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 from datetime import timedelta
 from scipy.stats import linregress
+import utils.missing_data as md
+import utils.config as config
 
 
 def find_variables(lab_df):
@@ -96,8 +98,8 @@ def historical_labs(lab_df, n_days=14):
     pandas.DataFrame: The filtered dataframe containing historical lab records.
     """
     d = timedelta(days=n_days)
-    historical_labs = lab_df[(lab_df["charttime"] < lab_df["index_date"] - d)]
-    return historical_labs
+    historical_lab_df = lab_df[(lab_df["charttime"] < lab_df["index_date"] - d)]
+    return historical_lab_df
 
 
 def write_report(current_labs, historical_labs, dir, extra_strings=None):
@@ -240,3 +242,83 @@ def generate_trend_features(
             "proximal_trend": proximals,
         }
     )
+
+
+def generate_features(
+    processed_labs,
+    cohort_ids,
+    current_window_preindex=30,
+    current_window_postindex=3,
+    historical_window=30,
+):
+
+    current_labs = current_bloods_df(
+        processed_labs, current_window_preindex, current_window_postindex
+    )
+
+    outcome = current_labs["outcome"]
+
+    # Fill missing values in the current_labs dataframe
+    current_labs = md.fill_nas_normal(current_labs.drop("outcome", axis=1))
+
+    current_labs["outcome"] = outcome
+
+    historical_lab_df = historical_labs(processed_labs, historical_window)
+
+    current_labs, historical_lab_df, removed = md.remove_if_missing_from_other(
+        current_labs, historical_lab_df
+    )
+    print(f"Removed {len(removed)} subject_ids from current_labs and historical_labs")
+    print(
+        f"Removed {sum(cohort_ids[cohort_ids['subject_id'].isin(removed)]['outcome'])} positive outcomes from current_labs"
+    )
+
+    # historical_labs.to_csv(config.utils_dir / "historical_labs.csv")
+
+    write_report(current_labs, historical_lab_df, config.output_dir)
+    # Remove subject_ids from current_labs and historical_labs that are not present in both
+
+    binned_labs = bin_measurements(historical_lab_df)
+
+    current_labs.to_csv(config.utils_dir / "current_labs.csv")
+    binned_labs.to_csv(config.utils_dir / "binned_labs.csv")
+    trend_features = generate_trend_features(
+        binned_labs, current_labs, config.proximal_timepoint, config.distal_timepoint
+    )
+    feature_df = pd.merge(current_labs, trend_features, on="subject_id")
+    return current_labs, trend_features, feature_df
+
+
+def create_array_for_CNN(processed_labs, current_window_postindex, max_history=None):
+
+    binned_df = bin_measurements(processed_labs)
+
+    binned_df["weekly_differences"] = int(round(binned_df["differences"] // 7))
+    binned_df = binned_df(binned_df["weekly_differences"] > -3)
+    if max_history:
+        binned_df = binned_df(binned_df["weekly_differences"] < max_history)
+
+    pivot_df = binned_df.reset_index().pivot_table(
+        index=["subject_id", "weekly_differences"], columns="label", values="valuenum"
+    )
+
+    pivot_df = pivot_df.fillna(0)
+
+    # Get all possible differences and blood test labels
+    all_differences = range(0, int(max(binned_df["weekly_differences"])) + 1)
+    all_blood_test_labels = pivot_df.columns.unique()
+
+    # Create a MultiIndex with all possible combinations of difference and subject_id
+    multiindex = pd.MultiIndex.from_product(
+        [pivot_df.index.levels[0], all_differences], names=["subject_id", "differences"]
+    )
+
+    # Reindex the pivot table to ensure all combinations are present, filling missing values with NaN
+    pivot_df = pivot_df.reindex(multiindex)
+
+    # 3d array with dimensions (subject_id, blood_test_label, difference)
+    array_3d = pivot_df.values.reshape(
+        (-1, len(pivot_df.columns), len(pivot_df.index.levels[1]))
+    )
+
+    return array_3d
