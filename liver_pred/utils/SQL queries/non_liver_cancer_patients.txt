@@ -1,11 +1,12 @@
-SELECT subject_id, hadm_id, 'None' as icd_code,
-			 admittime as index_date, 0 as outcome
+with controls as (SELECT subject_id, hadm_id, 'None' as icd_code,
+			 admittime as index_date, 0 as outcome,
+				  rank() over(partition by subject_id order by RANDOM())
 FROM mimiciv_hosp.admissions
 
-WHERE subject_id NOT IN (SELECT subject_id FROM mimiciv_hosp.diagnoses_icd
+WHERE (subject_id NOT IN (SELECT subject_id FROM mimiciv_hosp.diagnoses_icd
 	WHERE 
 
-		icd_code LIKE '155'|| '%'
+		(icd_code LIKE '155'|| '%'
 
-		OR  icd_code LIKE 'C22'|| '%')
-	;
+		OR  icd_code LIKE 'C22'|| '%'))))
+SELECT * from controls where rank=1

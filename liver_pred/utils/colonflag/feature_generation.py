@@ -234,7 +234,8 @@ def generate_trend_features(
         variables += [label]
         distals += [distal_trend]
         proximals += [proximal_trend]
-    return pd.DataFrame(
+
+    trend = pd.DataFrame(
         {
             "subject_id": subject_ids,
             "variable": variables,
@@ -242,6 +243,18 @@ def generate_trend_features(
             "proximal_trend": proximals,
         }
     )
+    trends_pivoted = trend.pivot(
+        index="subject_id",
+        columns="variable",
+        values=["distal_trend", "proximal_trend"],
+    )
+
+    trends_pivoted.columns = [f"{col[0]}_{col[1]}" for col in trends_pivoted.columns]
+    for col in trends_pivoted.columns:
+        trends_pivoted[col] = trends_pivoted[col].apply(
+            lambda x: x.squeeze() if isinstance(x, pd.Series) else x
+        )
+    return trends_pivoted.reset_index()
 
 
 def generate_features(
@@ -286,6 +299,9 @@ def generate_features(
         binned_labs, current_labs, config.proximal_timepoint, config.distal_timepoint
     )
     feature_df = pd.merge(current_labs, trend_features, on="subject_id")
+    # move outcome to end
+    column_to_move = feature_df.pop("outcome")
+    feature_df.insert(0, "outcome", column_to_move)
     return current_labs, trend_features, feature_df
 
 

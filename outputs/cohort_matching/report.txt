@@ -2,11 +2,11 @@ Prematching:
  ---------------
 casen = 1360                 
 controln = 179373                 
-accuracy = 54.44 
+accuracy = 54.41 
 
 
          Postmatching: 
  ---------------
-casen = 1360             
-controln = 6800             
+casen = 1353             
+controln = 6665             
 accuracy = 50.0
