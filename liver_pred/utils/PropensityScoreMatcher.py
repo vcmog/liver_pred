@@ -133,13 +133,14 @@ class PropensityScoreMatcher:
         -------
         None
         """
+
         if "scores" not in self.data.columns:
             print("Propensity Scores have not been calculated. Using defaults...")
             self.fit_scores()
             self.predict_scores()
         case_scores = self.data[self.data[self.yvar] == 1][["scores"]]
         ctrl_scores = self.data[self.data[self.yvar] == 0][["scores"]]
-        result, match_ids = [], []
+        result, match_ids, matched_patients = [], [], set()
         for i in range(len(case_scores)):
             # uf.progress(i+1, len(test_scores), 'Matching Control to Test...')
             score = case_scores.iloc[i]
@@ -156,16 +157,22 @@ class PropensityScoreMatcher:
             if len(matches) == 0:
                 continue
             # randomly choose nmatches indices, if len(matches) > nmatches
-            select = (
-                nmatches
-                if method != "random"
-                else np.random.choice(range(1, max_rand + 1), 1)
-            )
-            chosen = np.random.choice(
-                matches.index, min(select, nmatches), replace=False
-            )
-            result.extend([case_scores.index[i]] + list(chosen))
-            match_ids.extend([i] * (len(chosen) + 1))
+            selected_matches = []
+            for _ in range(min(nmatches, len(matches))):
+                chosen = matches.index[0]  # Default to first match
+                if method == "random":
+                    chosen = np.random.choice(matches.index, 1)[0]
+                selected_matches.append(chosen)
+                matches = matches.drop(chosen)
+            selected_matches = [
+                m for m in selected_matches if m not in matched_patients
+            ]
+            if len(selected_matches) == 0:
+                continue
+            match_ids.extend([i] * (len(selected_matches) + 1))
+            result.extend([case_scores.index[i]] + selected_matches)
+            matched_patients.update(selected_matches)
+
         self.matched_data = self.data.loc[result]
         self.matched_data["match_id"] = match_ids
         self.matched_data["record_id"] = self.matched_data.index
