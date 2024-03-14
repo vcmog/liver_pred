@@ -4,4 +4,9 @@
 *.pyc
 
 /data/*/*.csv
+/utils/*.csv
 /utils/__pycache__/
+
+data/interim/matched_cohort_ids.csv
+
+data/interim/labevents
