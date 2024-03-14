@@ -1,0 +1,13 @@
+*.csv
+*.txt
+*.png
+*.pyc
+
+/data/*/*.csv
+/utils/*.csv
+/utils/__pycache__/
+/data/*/*
+
+data/interim/matched_cohort_ids.csv
+
+data/interim/labevents
