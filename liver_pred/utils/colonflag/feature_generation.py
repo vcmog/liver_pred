@@ -293,8 +293,8 @@ def generate_features(
 
     binned_labs = bin_measurements(historical_lab_df)
 
-    current_labs.to_csv(config.utils_dir / "current_labs.csv")
-    binned_labs.to_csv(config.utils_dir / "binned_labs.csv")
+    # current_labs.to_csv(config.utils_dir / "current_labs.csv")
+    # binned_labs.to_csv(config.utils_dir / "binned_labs.csv")
     trend_features = generate_trend_features(
         binned_labs, current_labs, config.proximal_timepoint, config.distal_timepoint
     )
