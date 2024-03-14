@@ -36,15 +36,19 @@ if Path(data_dir / "input/cases.csv").exists():
 else:
     cases = load_sql_from_text("liver_cancer_patients.txt", engine=pg_engine)
     cases.drop_duplicates(
-        inplace=True
+        subset=["subject_id", "hadm_id"], inplace=True
     )  # if patient was diagnosed twice in one admission, only keep one
     cases.to_csv(data_dir / "input/cases.csv")
+    if sum(cases.duplicated()):
+        print("Duplicated cases found")
 # Load Controls
 print("Loading controls...")
 if Path(data_dir / "input/controls.csv").exists():
     controls = pd.read_csv(data_dir / "input/controls.csv")
 else:
     controls = load_sql_from_text("non_liver_cancer_patients.txt", engine=pg_engine)
+    if sum(controls.duplicated()):
+        print("Duplicated controls found")
     controls.to_csv(data_dir / "input/controls.csv")
 
 # Load characteristics of MIMICIV cohort
@@ -189,7 +193,7 @@ cohort_ids.to_sql(
     "cohort",
     pg_engine,
     schema="mimiciv_derived",
-    if_exists="replace",
+    if_exists="fail",
     index=False,
     dtype={
         "subject_id": types.Integer(),
