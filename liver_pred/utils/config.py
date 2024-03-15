@@ -18,7 +18,7 @@ no_matches = 5
 
 
 # Lab Processing Options
-lab_threshold = 0.2
+lab_threshold = 0.5
 lab_aggregate = False
 lab_save_to_csv = True
 output_filename = "processed_lab_data.csv"
