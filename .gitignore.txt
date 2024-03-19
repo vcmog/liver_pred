@@ -3,11 +3,11 @@
 *.png
 *.pyc
 
-/data/*/*.csv
-/utils/*.csv
-/utils/__pycache__/
-/data/*/*
-
+data/*/*.csv
+utils/*.csv
+utils/__pycache__/
+data/*/*
+data/*/*.npy
 data/interim/matched_cohort_ids.csv
 
 data/interim/labevents
