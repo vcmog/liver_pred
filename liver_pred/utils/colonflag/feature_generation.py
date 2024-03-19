@@ -319,16 +319,28 @@ def create_array_for_CNN(processed_labs, current_window_postindex, max_history=N
 
     """
     binned_df = bin_measurements(processed_labs)
-
+    # outcome = processed_labs[["subject_id", "outcome"]].drop_duplicates()
     binned_df["weekly_differences"] = round(binned_df["differences"] // 7, 0)
-    binned_df = binned_df[binned_df["weekly_differences"] > -3]
+    binned_df = binned_df[binned_df["weekly_differences"] > -current_window_postindex]
     if max_history:
         binned_df = binned_df[binned_df["weekly_differences"] < max_history]
 
-    pivot_df = binned_df.reset_index().pivot_table(
-        index=["subject_id", "weekly_differences"], columns="label", values="valuenum"
+    pivot_df = (
+        binned_df.reset_index()
+        .fillna(0)
+        .pivot_table(
+            index=["subject_id", "weekly_differences"],
+            columns="label",
+            values="valuenum",
+        )
     )
-
+    subject_ids = pivot_df.index.get_level_values(0).drop_duplicates()
+    outcome = (
+        processed_labs[["subject_id", "outcome"]]
+        .drop_duplicates()
+        .set_index("subject_id")
+        .loc[subject_ids]["outcome"]
+    )
     pivot_df = pivot_df.fillna(0)
 
     # Get all possible differences and blood test labels
@@ -346,5 +358,6 @@ def create_array_for_CNN(processed_labs, current_window_postindex, max_history=N
     array_3d = pivot_df.values.reshape(
         (-1, len(pivot_df.columns), len(pivot_df.index.levels[1]))
     )
+    array_3d = np.nan_to_num(array_3d)
 
-    return array_3d
+    return array_3d, outcome
