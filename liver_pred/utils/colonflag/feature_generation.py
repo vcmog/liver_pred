@@ -264,6 +264,19 @@ def generate_features(
     current_window_postindex=3,
     historical_window=30,
 ):
+    """
+    Generate features for liver cancer prediction.
+
+    Args:
+        processed_labs (DataFrame): Processed laboratory data.
+        cohort_ids (DataFrame): Cohort IDs data.
+        current_window_preindex (int, optional): Number of days before the current timepoint to include in the current labs data. Defaults to 30.
+        current_window_postindex (int, optional): Number of days after the current timepoint to include in the current labs data. Defaults to 3.
+        historical_window (int, optional): Number of days to include in the historical labs data. Defaults to 30.
+
+    Returns:
+        Tuple: A tuple containing the current labs data, trend features, and the final feature dataframe.
+    """
 
     current_labs = current_bloods_df(
         processed_labs, current_window_preindex, current_window_postindex
