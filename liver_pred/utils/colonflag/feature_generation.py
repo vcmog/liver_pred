@@ -69,7 +69,7 @@ def current_bloods_df(lab_df, n_days_pre=7, n_days_post=1):
                           subject, with outcomes separated into a different column
                           and the lab tests pivoted so that each variable is a column.
     """
-    current = lab_within_n_days(lab_df, n_days_pre=7, n_days_post=1)
+    current = lab_within_n_days(lab_df, n_days_pre=n_days_pre, n_days_post=n_days_post)
     # Find the mean value for each lab test
     current = current.groupby(["subject_id", "label"])[["valuenum", "outcome"]].agg(
         "mean"
