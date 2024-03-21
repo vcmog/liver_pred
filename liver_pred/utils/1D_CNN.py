@@ -123,3 +123,126 @@ def initialise_dataloaders(
     test_dataloader.transform = custom_transform
     val_dataloader.transform = custom_transform
     return train_dataloader, test_dataloader, val_dataloader
+
+
+class onedCNN2(nn.Module):
+    def __init__(self):
+        super(onedCNN2, self).__init__()
+        # Define your convolutional layers
+        self.conv1 = nn.Conv1d(in_channels=54, out_channels=108, kernel_size=3)
+        # (input_size - kernel_size + 2*padding)/stride + 1
+        # (100 - 3 + 2*1)/1 + 1 = 100
+        # (54 - 1 +2*1)/1 + 1 = 56
+        self.conv2 = nn.Conv1d(
+            in_channels=108, out_channels=216, kernel_size=3, padding=1
+        )
+        # 50 - 3 + 2*1)/1 + 1 = 50
+        self.conv3 = nn.Conv1d(
+            in_channels=216, out_channels=216, kernel_size=3, padding=1
+        )
+        self.conv4 = nn.Conv1d(
+            in_channels=216, out_channels=432, kernel_size=2, padding=1
+        )
+        # Define your fully connected layers
+
+        self.fc1 = nn.Linear(432 * 7, 64)
+        self.fc2 = nn.Linear(64, 1)  # Assuming you have 2 classes
+
+        self.dropout = nn.Dropout(0.6)
+
+    def forward(self, x):
+        # Input x has shape (batch_size, channels, height, width)
+        x = self.conv1(x)
+        x = nn.functional.relu(x)
+        x = nn.functional.max_pool1d(x, kernel_size=2, stride=2)
+
+        x = self.conv2(x)
+        x = nn.functional.relu(x)
+        x = nn.functional.max_pool1d(x, kernel_size=2, stride=2)
+
+        x = self.conv3(x)
+        x = nn.functional.relu(x)
+        x = nn.functional.max_pool1d(x, kernel_size=2, stride=2)
+
+        x = self.conv4(x)
+        x = nn.functional.relu(x)
+        x = nn.functional.max_pool1d(x, kernel_size=1, stride=2)
+
+        # Flatten the output for the fully connected layers
+        x = x.view(x.size(0), -1)  # x.size(0) is the batch size
+
+        x = self.dropout(x)
+        x = self.fc1(x)
+        x = nn.functional.relu(x)
+        x = self.dropout(x)
+        x = self.fc2(x)
+        return x
+
+
+def train_model(
+    model,
+    train_dataloader,
+    val_dataloader,
+    num_epochs=10,
+    lr=0.001,
+    pos_class_weight=None,
+):
+    # Initialize your CNN
+
+    best_val_loss = float("inf")
+
+    # Define your loss function and optimizer
+    criterion = nn.BCEWithLogitsLoss(pos_weight=pos_class_weight, reduction="mean")
+    unweighted_criterion = nn.BCEWithLogitsLoss(reduction="mean")
+    optimizer = optim.Adam(model.parameters(), lr=0.00001, weight_decay=1e-5)
+
+    training_losses = []
+    val_losses = []
+    # Assuming your input data is in the form of a PyTorch tensor
+    # Here's how you can train your CNN
+    for epoch in range(num_epochs):
+        # Create a progress bar
+        progress_bar = tqdm(
+            train_dataloader, desc=f"Epoch {epoch + 1}/{num_epochs}", leave=False
+        )
+        running_loss = 0.0
+
+        # Iterate over the dataset
+        for inputs, labels in progress_bar:
+            optimizer.zero_grad()
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+            # Update the running loss
+            running_loss += loss.item()
+
+            # Update the progress bar with the current loss
+            progress_bar.set_postfix({"loss": running_loss / len(progress_bar)})
+
+        # Calculate average loss for the epoch
+        epoch_loss = running_loss / len(train_dataloader)
+        training_losses.append(epoch_loss)
+        # Validation phase
+        model.eval()  # Set model to evaluation mode
+        running_val_loss = 0.0
+
+        with torch.no_grad():
+            for inputs, labels in val_dataloader:
+                outputs = model(inputs)
+                loss = unweighted_criterion(outputs, labels)
+                running_val_loss += loss.item()
+
+        # Calculate average validation loss for the epoch
+        epoch_val_loss = running_val_loss / len(val_dataloader)
+        val_losses.append(epoch_val_loss)
+        if epoch_val_loss < best_val_loss:
+            best_val_loss = epoch_val_loss
+            torch.save(model.state_dict(), dir + "/1d_model.pth")
+
+        print(
+            f"Epoch [{epoch + 1}/{num_epochs}], Training Loss: {epoch_loss:.4f}",
+            "Validation Loss:",
+            epoch_val_loss,
+        )
