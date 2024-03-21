@@ -198,8 +198,8 @@ def train_model(
 
     training_losses = []
     val_losses = []
-    # Assuming your input data is in the form of a PyTorch tensor
-    # Here's how you can train your CNN
+    
+    # Train the model
     for epoch in range(num_epochs):
         # Create a progress bar
         progress_bar = tqdm(
@@ -246,3 +246,4 @@ def train_model(
             "Validation Loss:",
             epoch_val_loss,
         )
+
