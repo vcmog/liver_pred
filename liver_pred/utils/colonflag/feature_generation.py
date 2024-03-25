@@ -263,6 +263,8 @@ def generate_features(
     current_window_preindex=30,
     current_window_postindex=3,
     historical_window=30,
+    proximal=config.proximal_timepoint,
+    distal=config.distal_timepoint,
 ):
     """
     Generate features for liver cancer prediction.
@@ -309,7 +311,7 @@ def generate_features(
     # current_labs.to_csv(config.utils_dir / "current_labs.csv")
     # binned_labs.to_csv(config.utils_dir / "binned_labs.csv")
     trend_features = generate_trend_features(
-        binned_labs, current_labs, config.proximal_timepoint, config.distal_timepoint
+        binned_labs, current_labs, proximal, distal
     )
     feature_df = pd.merge(current_labs, trend_features, on="subject_id")
     # move outcome to end
