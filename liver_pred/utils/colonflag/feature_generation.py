@@ -78,7 +78,7 @@ def current_bloods_df(lab_df, lead_time=0, n_days_pre=7, n_days_post=1):
         pandas.DataFrame: The generated dataframe of current blood test results for
         each subject.
     """
-
+    unique_ids = lab_df["cohort_ids"].unique()
     if lead_time:
         lab_df["pseudo_index"] = lab_df["index_date"] - timedelta(days=lead_time)
         use_pseudo = True
@@ -100,6 +100,15 @@ def current_bloods_df(lab_df, lead_time=0, n_days_pre=7, n_days_post=1):
     current = current.pivot_table(
         index="subject_id", columns="label", values="valuenum"
     )
+    ### TO DO: add line to add back other subject_ids who have no values
+    check_and_add_columns(current, find_variables(lab_df))
+    current["outcome"] = outcomes
+
+    # Add rows for unique_ids not already in the index of current
+    missing_ids = set(unique_ids) - set(current.index)
+    missing_data = pd.DataFrame(index=missing_ids, columns=current.columns)
+    current = pd.concat([current, missing_data])
+
     check_and_add_columns(current, find_variables(lab_df))
     current["outcome"] = outcomes
     return current.reset_index()
