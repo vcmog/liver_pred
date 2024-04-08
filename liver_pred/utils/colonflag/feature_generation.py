@@ -127,9 +127,11 @@ def historical_labs(lab_df, lead_time=0, n_days=0):
 
 
 def write_report(current_labs, historical_labs, dir, extra_strings=None):
+
     current_len = len(current_labs)
     current_control_len = len(current_labs[current_labs["outcome"] == 0])
     current_case_len = len(current_labs[current_labs["outcome"] == 1])
+
     with open(dir / "colonflag/historical_labs_report.txt", "w") as f:
         f.write(
             "Number of patients with measurements in current_labs:{} (total) {} (control) {} (case)\n".format(
@@ -138,6 +140,7 @@ def write_report(current_labs, historical_labs, dir, extra_strings=None):
                 current_case_len,
             )
         )
+
         f.write(
             "Number of patients with measurements in historical_labs: {} (total) {} (control) {} (case)\n".format(
                 historical_labs["subject_id"].nunique(),
@@ -149,6 +152,7 @@ def write_report(current_labs, historical_labs, dir, extra_strings=None):
                 ].nunique(),
             )
         )
+
         f.write(
             "Percentages of patients with historical_labs measurements: {:.2f}% (total) {:.2f}% (control) {:.2f}% (case)\n".format(
                 (historical_labs["subject_id"].nunique() / current_len) * 100,
@@ -168,6 +172,7 @@ def write_report(current_labs, historical_labs, dir, extra_strings=None):
                 * 100,
             )
         )
+
         if extra_strings:
             for string in extra_strings:
                 f.write(string + "\n")
@@ -195,18 +200,23 @@ def bin_measurements(lab_df):
             - 'differences': Difference in days between 'index_date' and 'charttime'.
 
     """
+    if "pseudo_index" in lab_df.columns:
+        index_col = "pseudo_index"
+    else:
+        index_col = "index_date"
+
     custom_agg = {
-        "index_date": "first",  # Keep the first value (assuming it's the same for each group)
+        index_col: "first",  # Keep the first value (assuming it's the same for each group)
         "valuenum": "mean",  # Aggregate 'valuenum' using the mean
     }
     grouped = (
-        lab_df[["subject_id", "label", "valuenum", "charttime", "index_date"]]
+        lab_df[["subject_id", "label", "valuenum", "charttime", index_col]]
         .groupby(["subject_id", "label", pd.Grouper(key="charttime", freq="W")])
         .agg(custom_agg)
     )
 
     third_level_data = grouped.index.get_level_values(2)
-    grouped["differences"] = grouped["index_date"] - third_level_data
+    grouped["differences"] = grouped[index_col] - third_level_data
     grouped["differences"] = (grouped["differences"] / np.timedelta64(1, "D")).astype(
         int
     )
@@ -284,9 +294,10 @@ def generate_trend_features(
 def generate_features(
     processed_labs,
     cohort_ids,
-    current_window_preindex=30,
-    current_window_postindex=3,
-    historical_window=30,
+    lead_time=0,
+    current_window_preindex=0,
+    current_window_postindex=0,
+    historical_window=0,
     proximal=config.proximal_timepoint,
     distal=config.distal_timepoint,
 ):
@@ -305,7 +316,10 @@ def generate_features(
     """
 
     current_labs = current_bloods_df(
-        processed_labs, current_window_preindex, current_window_postindex
+        processed_labs,
+        lead_time=lead_time,
+        n_days_pre=current_window_preindex,
+        n_days_post=current_window_postindex,
     )
 
     outcome = current_labs["outcome"]
@@ -315,7 +329,9 @@ def generate_features(
 
     current_labs["outcome"] = outcome
 
-    historical_lab_df = historical_labs(processed_labs, historical_window)
+    historical_lab_df = historical_labs(
+        processed_labs, lead_time=lead_time, n_days=historical_window
+    )
 
     current_labs, historical_lab_df, removed = md.remove_if_missing_from_other(
         current_labs, historical_lab_df
@@ -344,7 +360,7 @@ def generate_features(
     return current_labs, trend_features, feature_df
 
 
-def create_array_for_CNN(processed_labs, current_window_postindex, max_history=None):
+def create_array_for_CNN(processed_labs, lead_time=0, max_history=None):
     """
     Create a 3D array for Convolutional Neural Network (CNN) input.
 
@@ -360,7 +376,7 @@ def create_array_for_CNN(processed_labs, current_window_postindex, max_history=N
     binned_df = bin_measurements(processed_labs)
     # outcome = processed_labs[["subject_id", "outcome"]].drop_duplicates()
     binned_df["weekly_differences"] = round(binned_df["differences"] // 7, 0)
-    binned_df = binned_df[binned_df["weekly_differences"] > -current_window_postindex]
+    binned_df = binned_df[binned_df["weekly_differences"] > lead_time]
     if max_history:
         binned_df = binned_df[binned_df["weekly_differences"] < max_history]
 
