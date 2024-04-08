@@ -32,7 +32,7 @@ def check_and_add_columns(df, variable_names):
             )  # Or you can use df[var_name] = None for object columns
 
 
-def lab_within_n_days(lab_df, n_days_pre, n_days_post):
+def lab_within_n_days(lab_df, n_days_pre, n_days_post, use_pseudo_index=False):
     """
     Returns a subset of lab_df containing lab measurements within a specified
     number of days from the index date.
@@ -46,30 +46,47 @@ def lab_within_n_days(lab_df, n_days_pre, n_days_post):
     DataFrame: A subset of lab_df containing lab measurements within n_days
     from the index date.
     """
+
     d1 = timedelta(days=n_days_pre)
     d2 = timedelta(days=n_days_post)
+    if use_pseudo_index:
+        index_col = "pseudo_index"
+    else:
+        index_col = "index_date"
+
     labs_within_n_days = lab_df[
-        (lab_df["charttime"] < lab_df["index_date"] + d2)
-        & (lab_df["charttime"] > lab_df["index_date"] - d1)
+        (lab_df["charttime"] < (lab_df[index_col] + d2))
+        & (lab_df["charttime"] > (lab_df[index_col] - d1))
     ]
     return labs_within_n_days
 
 
-def current_bloods_df(lab_df, n_days_pre=7, n_days_post=1):
+def current_bloods_df(lab_df, lead_time=0, n_days_pre=7, n_days_post=1):
     """
     Generate a dataframe of current blood test results for each subject.
 
     Args:
         lab_df (pandas.DataFrame): The input dataframe containing blood test results.
-        n_days (int, optional): The number of days to consider for current blood test
-        results. Defaults to 14.
+        lead_time (int, optional): The number of days to subtract from the index date for early detection. Defaults to 0.
+        n_days_pre (int, optional): The number of days before the index date to include in current_df. Defaults to 7.
+        n_days_post (int, optional): The number of days after the index date to include in the current_df. Defaults to 1.
 
     Returns:
-        pandas.DataFrame: A dataframe with the mean value of each lab test for each
-                          subject, with outcomes separated into a different column
-                          and the lab tests pivoted so that each variable is a column.
+        pandas.DataFrame: The generated dataframe of current blood test results for each subject.
     """
-    current = lab_within_n_days(lab_df, n_days_pre=n_days_pre, n_days_post=n_days_post)
+
+    if lead_time:
+        lab_df["pseudo_index"] = lab_df["index_date"] - timedelta(days=lead_time)
+        use_pseudo = True
+    else:
+        use_pseudo = False
+    current = lab_within_n_days(
+        lab_df,
+        n_days_pre=n_days_pre,
+        n_days_post=n_days_post,
+        use_pseudo_index=use_pseudo,
+    )
+
     # Find the mean value for each lab test
     current = current.groupby(["subject_id", "label"])[["valuenum", "outcome"]].agg(
         "mean"
@@ -84,21 +101,28 @@ def current_bloods_df(lab_df, n_days_pre=7, n_days_post=1):
     return current.reset_index()
 
 
-def historical_labs(lab_df, n_days=14):
+def historical_labs(lab_df, lead_time=0, n_days=0):
     """
-    Filter the lab_df dataframe to include only the historical lab records
-    that are older than n_days.
+    Filter the lab_df DataFrame to include only historical lab records.
 
     Parameters:
-    lab_df (pandas.DataFrame): The dataframe containing lab records.
-    n_days (int): The number of days to consider for historical lab records.
-    Default is 14.
+    lab_df (DataFrame): The DataFrame containing lab records.
+    lead_time (int, optional): The number of days to subtract from the index_date. Defaults to 0.
+    n_days (int, optional): Number of days between the most recent historical measurement and the index. Defaults to 0.
+    use_pseudo_index (bool, optional): Whether to use a pseudo index for filtering. Defaults to False.
 
     Returns:
-    pandas.DataFrame: The filtered dataframe containing historical lab records.
+    DataFrame: The filtered DataFrame containing historical lab records.
     """
+
+    if lead_time:
+        lab_df["pseudo_index"] = lab_df["index_date"] - timedelta(days=lead_time)
+        index_col = "pseudo_index"
+    else:
+        index_col = "index_date"
+
     d = timedelta(days=n_days)
-    historical_lab_df = lab_df[(lab_df["charttime"] < lab_df["index_date"] - d)]
+    historical_lab_df = lab_df[(lab_df["charttime"] < lab_df[index_col] - d)]
     return historical_lab_df
 
 
