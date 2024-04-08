@@ -67,12 +67,16 @@ def current_bloods_df(lab_df, lead_time=0, n_days_pre=7, n_days_post=1):
 
     Args:
         lab_df (pandas.DataFrame): The input dataframe containing blood test results.
-        lead_time (int, optional): The number of days to subtract from the index date for early detection. Defaults to 0.
-        n_days_pre (int, optional): The number of days before the index date to include in current_df. Defaults to 7.
-        n_days_post (int, optional): The number of days after the index date to include in the current_df. Defaults to 1.
+        lead_time (int, optional): The number of days to subtract from the index date
+        for early detection. Defaults to 0.
+        n_days_pre (int, optional): The number of days before the index date to include
+        in current_df. Defaults to 7.
+        n_days_post (int, optional): The number of days after the index date to include
+        in the current_df. Defaults to 1.
 
     Returns:
-        pandas.DataFrame: The generated dataframe of current blood test results for each subject.
+        pandas.DataFrame: The generated dataframe of current blood test results for
+        each subject.
     """
 
     if lead_time:
