@@ -24,12 +24,22 @@ def check_and_add_columns(df, variable_names):
         None
     """
 
-    for var_name in variable_names:
-        if var_name not in df.columns:
-            # If variable name doesn't exist as a column, add it with NaN values
-            df[var_name] = (
-                np.nan
-            )  # Or you can use df[var_name] = None for object columns
+    # for var_name in variable_names:
+    #    if (
+    #        var_name not in df.columns
+    #        and var_name != "outcome"
+    #        and var_name != "subject_id"
+    #    ):
+    #        # If variable name doesn't exist as a column, add it with NaN values
+    #        df[var_name] = (
+    #            np.nan
+    #        )  # Or you can use df[var_name] = None for object columns
+    missing_columns = {
+        var_name: np.nan
+        for var_name in variable_names
+        if var_name not in df.columns and var_name not in {"outcome", "subject_id"}
+    }
+    df = df.assign(**missing_columns)
 
 
 def lab_within_n_days(lab_df, n_days_pre, n_days_post, use_pseudo_index=False):
@@ -78,12 +88,15 @@ def current_bloods_df(lab_df, lead_time=0, n_days_pre=7, n_days_post=1):
         pandas.DataFrame: The generated dataframe of current blood test results for
         each subject.
     """
-    unique_ids = lab_df["cohort_ids"].unique()
+    unique_ids = pd.DataFrame({"subject_id": lab_df["subject_id"].unique()})
+    unique_ids["outcome"] = lab_df.groupby(["subject_id"])["outcome"].agg("max").values
+
     if lead_time:
         lab_df["pseudo_index"] = lab_df["index_date"] - timedelta(days=lead_time)
         use_pseudo = True
     else:
         use_pseudo = False
+
     current = lab_within_n_days(
         lab_df,
         n_days_pre=n_days_pre,
@@ -92,25 +105,29 @@ def current_bloods_df(lab_df, lead_time=0, n_days_pre=7, n_days_post=1):
     )
 
     # Find the mean value for each lab test
-    current = current.groupby(["subject_id", "label"])[["valuenum", "outcome"]].agg(
-        "mean"
+    current = (
+        current[["subject_id", "label", "valuenum"]]
+        .groupby(["subject_id", "label"])[["valuenum"]]
+        .mean()
     )
+
     # separate outcomes into a different column so can pivot the lab_df so that each variable is a column
-    outcomes = current["outcome"].groupby("subject_id").agg("max")
+    # outcomes = current["outcome"].groupby("subject_id").agg("max")
     current = current.pivot_table(
         index="subject_id", columns="label", values="valuenum"
     )
-    ### TO DO: add line to add back other subject_ids who have no values
+    # TO DO: add line to add back other subject_ids who have no values
+
     check_and_add_columns(current, find_variables(lab_df))
-    current["outcome"] = outcomes
 
     # Add rows for unique_ids not already in the index of current
-    missing_ids = set(unique_ids) - set(current.index)
+    missing_ids = list(set(unique_ids["subject_id"]) - set(current.index))
     missing_data = pd.DataFrame(index=missing_ids, columns=current.columns)
     current = pd.concat([current, missing_data])
 
-    check_and_add_columns(current, find_variables(lab_df))
-    current["outcome"] = outcomes
+    current["outcome"] = unique_ids.set_index("subject_id").loc[current.index][
+        "outcome"
+    ]
     return current.reset_index()
 
 
