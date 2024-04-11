@@ -89,7 +89,7 @@ def current_bloods_df(lab_df, lead_time=0, n_days_pre=7, n_days_post=1):
         each subject.
     """
     unique_ids = pd.DataFrame({"subject_id": lab_df["subject_id"].unique()})
-    unique_ids["outcome"] = lab_df.groupby(["subject_id"])["outcome"].agg("max").values
+    unique_ids["outcome"] = lab_df.groupby(["subject_id"], observed=True)["outcome"].agg("max").values
 
     if lead_time:
         lab_df["pseudo_index"] = lab_df["index_date"] - timedelta(days=lead_time)
