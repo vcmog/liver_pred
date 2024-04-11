@@ -4,7 +4,7 @@
 *.pyc
 
 data/
-
+data/*
 data/*/*.csv
 liver_pred/utils/*.csv
 liver_pred/utils/__pycache__/
