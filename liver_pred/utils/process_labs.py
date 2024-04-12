@@ -45,6 +45,3 @@ print("Number of Unique Variables pre-processing:")
 print(labs_data["itemid"].nunique())
 print("Number of Unique Variables post-processing:")
 print(processed_lab_data["itemid"].nunique())
-
-# Save the processed lab data to a CSV file
-processed_lab_data.to_csv(config.data_dir / "interim/processed_labs.csv")
