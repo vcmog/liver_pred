@@ -32,7 +32,7 @@ conn = pg_engine.connect()
 # Load Cases
 print("Loading cases...")
 if Path(data_dir / "input/cases.csv").exists():
-    cases = pd.read_csv(data_dir / "input/cases.csv")
+    cases = pd.read_csv(data_dir / "input/cases.csv", index_col=0)
 else:
     cases = load_sql_from_text("liver_cancer_patients.txt", engine=pg_engine)
     cases.drop_duplicates(
@@ -44,7 +44,7 @@ else:
 # Load Controls
 print("Loading controls...")
 if Path(data_dir / "input/controls.csv").exists():
-    controls = pd.read_csv(data_dir / "input/controls.csv")
+    controls = pd.read_csv(data_dir / "input/controls.csv", index_col=0)
 else:
     controls = load_sql_from_text("non_liver_cancer_patients.txt", engine=pg_engine)
     if sum(controls.duplicated()):
@@ -54,7 +54,7 @@ else:
 # Load characteristics of MIMICIV cohort
 print("Loading characteristics...")
 if Path(data_dir / "input/characteristics.csv").exists():
-    characteristics = pd.read_csv(data_dir / "input/characteristics.csv")
+    characteristics = pd.read_csv(data_dir / "input/characteristics.csv", index_col=0)
 else:
     run_sql_from_txt("characteristics.txt", pg_engine)
     characteristics = pd.read_sql_query(
@@ -118,22 +118,33 @@ if config.perform_matching:
 
     # Save matched data
     matched_data = matcher.matched_data
-
+    matched_data.to_csv(data_dir / "interim/matched_data.csv")
     cohort_ids = matched_data[["subject_id", "hadm_id", "outcome"]]
 
     # Add in index date
-    cohort_ids = pd.merge(
-        cohort_ids, cases[["hadm_id", "index_date"]], on="hadm_id", how="left"
-    )
-    cohort_ids = pd.merge(
-        cohort_ids, controls[["hadm_id", "index_date"]], on="hadm_id", how="left"
-    )
-    cohort_ids["index_date"] = cohort_ids["index_date_x"].combine_first(
-        cohort_ids["index_date_y"]
-    )
-    cohort_ids = cohort_ids.drop(columns=["index_date_x", "index_date_y"])
-    cohort_ids.to_csv(data_dir / "interim/matched_cohort_ids.csv")
+    # cohort_ids = pd.merge(
+    #    cohort_ids, cases[["hadm_id", "index_date"]], on="hadm_id", how="left"
+    # )
+    # cohort_ids = pd.merge(
+    #    cohort_ids, controls[["hadm_id", "index_date"]], on="hadm_id", how="left"
+    # )
+    # cohort_ids["index_date"] = cohort_ids["index_date_x"].combine_first(
+    #    cohort_ids["index_date_y"]
+    # )
+    # cohort_ids = cohort_ids.drop(columns=["index_date_x", "index_date_y"])
+    # cohort_ids = cohort_ids[['subject_id', 'hadm_id', 'index_date', 'outcome']]
+    # cohort_ids.to_csv(data_dir / "interim/matched_cohort_ids.csv")
 
+    control_cohort = cohort_ids[cohort_ids["outcome"] == 0].merge(
+        controls.drop("rank", axis=1),
+        on=["subject_id", "hadm_id", "outcome"],
+        how="inner",
+    )
+    case_cohort = cohort_ids[cohort_ids["outcome"] == 1].merge(
+        cases, on=["subject_id", "hadm_id", "outcome"], how="inner"
+    )
+    cohort_ids = pd.concat([control_cohort, case_cohort]).sample(frac=1)
+    cohort_ids.to_csv(data_dir / "interim/matched_cohort_ids.csv")
     # Check how similar post match scores are
     post_match = PropensityScoreMatcher(
         matched_data[matched_data["outcome"] == 1],
@@ -164,9 +175,9 @@ if config.perform_matching:
 else:  # If not performing matching
 
     # Randomly sample cases and controls
-    cohort_ids = pd.concat([cases, controls])[
-        ["subject_id", "hadm_id", "outcome"]
-    ].sample(frac=1)
+    # cohort_ids = pd.concat([cases, controls])[
+    #    ["subject_id", "hadm_id", "outcome"]
+    # ].sample(frac=1)
 
     # Add in index date
     cohort_ids = pd.merge(
@@ -179,7 +190,8 @@ else:  # If not performing matching
         cohort_ids["index_date_y"]
     )
     cohort_ids = cohort_ids.drop(columns=["index_date_x", "index_date_y"])
-
+    if cohort_ids["index_date"].isnull().any():
+        print("NULL INDEX DATES :(:(")
     # Save matched data
     cohort_ids.to_csv(data_dir / "interim/cohort_ids.csv")
 print("Cohort IDs identified")
