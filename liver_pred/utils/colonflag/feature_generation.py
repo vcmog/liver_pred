@@ -107,7 +107,7 @@ def current_bloods_df(lab_df, lead_time=0, n_days_pre=7, n_days_post=1):
     # Find the mean value for each lab test
     current = (
         current[["subject_id", "label", "valuenum"]]
-        .groupby(["subject_id", "label"])[["valuenum"]]
+        .groupby(["subject_id", "label"], observed=True)[["valuenum"]]
         .mean()
     )
 
