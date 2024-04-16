@@ -89,7 +89,9 @@ def current_bloods_df(lab_df, lead_time=0, n_days_pre=7, n_days_post=1):
         each subject.
     """
     unique_ids = pd.DataFrame({"subject_id": lab_df["subject_id"].unique()})
-    unique_ids["outcome"] = lab_df.groupby(["subject_id"], observed=True)["outcome"].agg("max").values
+    unique_ids["outcome"] = (
+        lab_df.groupby(["subject_id"], observed=False)["outcome"].agg("max").values
+    )
 
     if lead_time:
         lab_df["pseudo_index"] = lab_df["index_date"] - timedelta(days=lead_time)
@@ -107,28 +109,32 @@ def current_bloods_df(lab_df, lead_time=0, n_days_pre=7, n_days_post=1):
     # Find the mean value for each lab test
     current = (
         current[["subject_id", "label", "valuenum"]]
-        .groupby(["subject_id", "label"], observed=True)[["valuenum"]]
+        .groupby(["subject_id", "label"], observed=False)[["valuenum"]]
         .mean()
     )
 
     # separate outcomes into a different column so can pivot the lab_df so that each variable is a column
     # outcomes = current["outcome"].groupby("subject_id").agg("max")
     current = current.pivot_table(
-        index="subject_id", columns="label", values="valuenum"
+        index="subject_id",
+        columns="label",
+        values="valuenum",
+        observed=False,
+        dropna=False,
     )
     # TO DO: add line to add back other subject_ids who have no values - or not?
 
     check_and_add_columns(current, find_variables(lab_df))
 
     # Add rows for unique_ids not already in the index of current
-    # missing_ids = list(set(unique_ids["subject_id"]) - set(current.index))
-    # missing_data = pd.DataFrame(index=missing_ids, columns=current.columns)
-    # current = pd.concat([current, missing_data])
+    missing_ids = list(set(unique_ids["subject_id"]) - set(current.index))
+    missing_data = pd.DataFrame(index=missing_ids, columns=current.columns)
+    current = pd.concat([current, missing_data])
 
     current["outcome"] = unique_ids.set_index("subject_id").loc[current.index][
         "outcome"
     ]
-    return current.reset_index()
+    return current.reset_index(names="subject_id")
 
 
 def historical_labs(lab_df, lead_time=0, n_days=0):
@@ -277,7 +283,7 @@ def generate_trend_features(
     proximals = []
 
     for (subject_id, label), group_data in groups:
-
+        group_data = group_data[group_data["valuenum"] == group_data["valuenum"]]
         X = group_data["differences"].values
         y = group_data["valuenum"].values
 
@@ -363,6 +369,7 @@ def generate_features(
         processed_labs, lead_time=lead_time, n_days=historical_window
     )
 
+    # get rid of this behaviour
     current_labs, historical_lab_df, removed = md.remove_if_missing_from_other(
         current_labs, historical_lab_df
     )
