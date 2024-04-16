@@ -130,23 +130,23 @@ class onedCNN(nn.Module):
     def __init__(self):
         super(onedCNN, self).__init__()
         # Define your convolutional layers
-        self.conv1 = nn.Conv1d(in_channels=54, out_channels=108, kernel_size=3)
+        self.conv1 = nn.Conv1d(in_channels=45, out_channels=90, kernel_size=3)
         # (input_size - kernel_size + 2*padding)/stride + 1
-        # (100 - 3 + 2*1)/1 + 1 = 100
-        # (54 - 1 +2*1)/1 + 1 = 56
+        # for 54 features: 108
         self.conv2 = nn.Conv1d(
-            in_channels=108, out_channels=216, kernel_size=3, padding=1
+            in_channels=90, out_channels=180, kernel_size=3, padding=1
         )
-        # 50 - 3 + 2*1)/1 + 1 = 50
+        # for 54 features: 216
         self.conv3 = nn.Conv1d(
-            in_channels=216, out_channels=216, kernel_size=3, padding=1
+            in_channels=180, out_channels=180, kernel_size=3, padding=1
         )
+        # for 54 features: 216
         self.conv4 = nn.Conv1d(
-            in_channels=216, out_channels=432, kernel_size=2, padding=1
+            in_channels=180, out_channels=360, kernel_size=2, padding=1
         )
         # Define your fully connected layers
 
-        self.fc1 = nn.Linear(432 * 7, 64)
+        self.fc1 = nn.Linear(360 * 7, 64)
         self.fc2 = nn.Linear(64, 1)  # Assuming you have 2 classes
 
         self.dropout = nn.Dropout(0.6)
