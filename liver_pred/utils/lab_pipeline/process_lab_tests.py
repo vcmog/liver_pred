@@ -89,7 +89,7 @@ def process_lab_tests(
     common_labs, lab_test_data = missingness_threshold(
         lab_test_data, threshold=threshold
     )
-    lab_test_data = remove_non_numeric_tests(lab_test_data)
+    lab_test_data, nulls = remove_non_numeric_tests(lab_test_data)
     # lab_test_data = standardize_units(lab_test_data)
     lab_test_data["index_date"] = pd.to_datetime(lab_test_data["index_date"])
     lab_test_data["charttime"] = pd.to_datetime(lab_test_data["charttime"])
