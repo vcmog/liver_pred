@@ -180,3 +180,25 @@ def return_labels(lab_df):
     merged_df = lab_df.merge(labels, left_on="itemid", right_index=True, how="left")
 
     return merged_df
+
+
+def remove_non_numeric_tests(lab_df):
+    """
+    Removes non-numeric tests from the lab dataframe, i.e., tests where all recorded values are NaN.
+
+    Args:
+        lab_df (pandas.DataFrame): The lab dataframe containing test results.
+
+    Returns:
+        tuple: A tuple containing the modified lab dataframe and a pandas Series
+        containing the labels of the removed non-numeric tests.
+    """
+    # some tests have no values, e.g. Urine Blood or Urine Bilirubin.
+    # group by label and count what proportion of resulting 'valuenum' are null
+    proportion_null = lab_df.groupby("label")["valuenum"].apply(
+        lambda x: x.isnull().mean()
+    )
+    nulls = proportion_null[proportion_null == 1].index
+    null_rows = lab_df[lab_df["label"].isin(nulls)]
+    lab_df.drop(null_rows.index, axis=0, inplace=True)
+    return lab_df, nulls
