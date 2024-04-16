@@ -293,10 +293,12 @@ def generate_trend_features(
             month_6 = model_results.slope * proximal_window + model_results.intercept
             month_12 = model_results.slope * distal_window + model_results.intercept
 
+            current_value = current_df[current_df["subject_id"] == subject_id][
+                label
+            ].values[0]
+
             distal_trend = month_12 - month_6
-            proximal_trend = month_6 - (
-                current_df[current_df["subject_id"] == subject_id][label]
-            )
+            proximal_trend = month_6 - current_value
 
         else:
             distal_trend = proximal_trend = 0
