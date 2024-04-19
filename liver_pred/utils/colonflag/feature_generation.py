@@ -455,3 +455,43 @@ def create_array_for_CNN(processed_labs, lead_time=0, max_history=None):
     array_3d = np.nan_to_num(array_3d)
 
     return array_3d, outcome
+
+
+def create_array_for_RNN(processed_labs, lead_time=0, max_history=None):
+
+    processed_labs["differences"] = (
+        processed_labs["index_date"] - processed_labs["charttime"]
+    )
+    processed_labs["differences"] = (
+        processed_labs["differences"] / np.timedelta64(1, "D")
+    ).astype(int)
+    processed_labs = processed_labs[processed_labs["differences"] > lead_time]
+    if max_history:
+        processed_labs = processed_labs[processed_labs["differences"] < max_history]
+
+    df = processed_labs.sort_values(["subject_id", "charttime"])
+    df["time_diff"] = df.groupby("subject_id")[
+        "charttime"
+    ].diff().dt.total_seconds().fillna(0) / np.timedelta64(1, "D").astype(int)
+    time_diff = df[["subject_id", "charttime", "time_diff"]]
+    time_diff = time_diff.groupby(["subject_id", "charttime"]).mean()
+    pivoted_df = df[["subject_id", "charttime", "label", "valuenum"]].pivot_table(
+        index=["subject_id", "charttime"], columns="label", values="valuenum"
+    )
+
+    n_subjects = pivoted_df.index.get_level_values(0).nunique()
+    n_features = len(pivoted_df.columns)
+
+    pivoted_df["time_diff"] = time_diff["time_diff"]
+
+    subject_data = pivoted_df.groupby(level=0).apply(lambda x: list(x.to_numpy()))
+
+    max_len = max([len(x) for x in subject_data])
+    padded_inputs = subject_data.apply(
+        lambda x: np.pad(
+            x, ((max_len - len(x), 0), (0, 0)), mode="constant", constant_values=0
+        )
+    )
+
+    # make it an array make padding optional at this point ?
+    
