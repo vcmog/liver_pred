@@ -457,7 +457,23 @@ def create_array_for_CNN(processed_labs, lead_time=0, max_history=None):
     return array_3d, outcome
 
 
-def create_array_for_RNN(processed_labs, lead_time=0, max_history=None):
+def create_array_for_RNN(processed_labs, lead_time=0, max_history=None, pad=True):
+    """
+    Create an array for Recurrent Neural Network (RNN) input.
+
+    Args:
+        processed_labs (DataFrame): The processed labs data.
+        lead_time (int, optional): The minimum time difference between index_date and charttime. Defaults to 0.
+        max_history (int, optional): The maximum time difference between index_date and charttime. Defaults to None.
+        pad (bool, optional): Whether to pad the input sequences. Defaults to True.
+
+    Returns:
+        array: The array for RNN input.
+
+    Raises:
+        None
+
+    """
 
     processed_labs["differences"] = (
         processed_labs["index_date"] - processed_labs["charttime"]
@@ -486,12 +502,13 @@ def create_array_for_RNN(processed_labs, lead_time=0, max_history=None):
 
     subject_data = pivoted_df.groupby(level=0).apply(lambda x: list(x.to_numpy()))
 
-    max_len = max([len(x) for x in subject_data])
-    padded_inputs = subject_data.apply(
-        lambda x: np.pad(
-            x, ((max_len - len(x), 0), (0, 0)), mode="constant", constant_values=0
+    if pad:
+        max_len = max([len(x) for x in subject_data])
+        padded_inputs = subject_data.apply(
+            lambda x: np.pad(
+                x, ((max_len - len(x), 0), (0, 0)), mode="constant", constant_values=0
+            )
         )
-    )
-
-    # make it an array make padding optional at this point ?
-    
+        return padded_inputs
+    else:
+        return subject_data
