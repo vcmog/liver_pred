@@ -457,7 +457,7 @@ def create_array_for_CNN(processed_labs, lead_time=0, max_history=None):
     return array_3d, outcome
 
 
-def create_array_for_RNN(processed_labs, lead_time=0, max_history=None, pad=True):
+def create_array_for_RNN(processed_labs, lead_time=0, max_history=None, pad=True, zero_fill_nan = True):
     """
     Create an array for Recurrent Neural Network (RNN) input.
 
@@ -495,13 +495,12 @@ def create_array_for_RNN(processed_labs, lead_time=0, max_history=None, pad=True
         index=["subject_id", "charttime"], columns="label", values="valuenum"
     )
 
-    n_subjects = pivoted_df.index.get_level_values(0).nunique()
-    n_features = len(pivoted_df.columns)
-
     pivoted_df["time_diff"] = time_diff["time_diff"]
 
     subject_data = pivoted_df.groupby(level=0).apply(lambda x: list(x.to_numpy()))
 
+    if zero_fill_nan:
+        subject_data = subject_data.apply(lambda x: np.nan_to_num(x))
     if pad:
         max_len = max([len(x) for x in subject_data])
         padded_inputs = subject_data.apply(
