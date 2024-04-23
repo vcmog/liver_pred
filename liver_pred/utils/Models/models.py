@@ -66,8 +66,9 @@ def prepare_features(
         sparse_cols = X.columns[X.isnull().mean() > sparse_col_threshold]
         X = X.drop(columns=sparse_cols)
 
-    train_size = 1 - test_size
-    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size)
+    if test_size:
+        train_size = 1 - test_size
+        X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size)
     print(
         f"Train Length: {len(X_train)}        Train cases: {len(y_train[y_train==1])}    Proportion: {len(y_train[y_train==1])/len(y_train)*100} %"
     )
