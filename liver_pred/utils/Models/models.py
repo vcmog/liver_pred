@@ -10,8 +10,28 @@ import pandas as pd
 from utils.config import data_dir
 from torchvision import transforms
 
+import matplotlib.pyplot as plt
 
-# Function to train a model on the trend features generated at different windows
+
+class OneD_Dataset(Dataset):
+    def __init__(self, file_path, labels_file_path):
+        self.data = np.load(file_path)
+        self.labels = np.load(labels_file_path)
+        self.dtype = torch.float32
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        sample = self.data[idx]
+        # Assuming you have labels for each sample
+        label = self.labels[idx]  # You should adjust this to fetch labels if available
+        label = torch.tensor([label], dtype=self.dtype)
+        sample = torch.tensor(sample, dtype=self.dtype)
+
+        return sample, label
+
+
 class RNNDataset(Dataset):
     def __init__(self, file_path, labels_file_path):
         self.data = np.load(file_path)
@@ -30,6 +50,60 @@ class RNNDataset(Dataset):
         # sample = torch.unsqueeze(sample, dim=0)
 
         return sample, label
+
+
+class onedCNN(nn.Module):
+    def __init__(self):
+        super(onedCNN, self).__init__()
+        # Define your convolutional layers
+        self.conv1 = nn.Conv1d(in_channels=45, out_channels=90, kernel_size=3)
+        # (input_size - kernel_size + 2*padding)/stride + 1
+        # for 54 features: 108
+        self.conv2 = nn.Conv1d(
+            in_channels=90, out_channels=180, kernel_size=3, padding=1
+        )
+        # for 54 features: 216
+        self.conv3 = nn.Conv1d(
+            in_channels=180, out_channels=180, kernel_size=3, padding=1
+        )
+        # for 54 features: 216
+        self.conv4 = nn.Conv1d(
+            in_channels=180, out_channels=360, kernel_size=2, padding=1
+        )
+        # Define your fully connected layers
+
+        self.fc1 = nn.Linear(360 * 7, 64)
+        self.fc2 = nn.Linear(64, 1)  # Assuming you have 2 classes
+
+        self.dropout = nn.Dropout(0.6)
+
+    def forward(self, x):
+        # Input x has shape (batch_size, channels, height, width)
+        x = self.conv1(x)
+        x = nn.functional.relu(x)
+        x = nn.functional.max_pool1d(x, kernel_size=2, stride=2)
+
+        x = self.conv2(x)
+        x = nn.functional.relu(x)
+        x = nn.functional.max_pool1d(x, kernel_size=2, stride=2)
+
+        x = self.conv3(x)
+        x = nn.functional.relu(x)
+        x = nn.functional.max_pool1d(x, kernel_size=2, stride=2)
+
+        x = self.conv4(x)
+        x = nn.functional.relu(x)
+        x = nn.functional.max_pool1d(x, kernel_size=1, stride=2)
+
+        # Flatten the output for the fully connected layers
+        x = x.view(x.size(0), -1)  # x.size(0) is the batch size
+
+        x = self.dropout(x)
+        x = self.fc1(x)
+        x = nn.functional.relu(x)
+        x = self.dropout(x)
+        x = self.fc2(x)
+        return x
 
 
 class MV_LSTM(torch.nn.Module):
@@ -196,3 +270,9 @@ def train_model(
             "Validation Loss:",
             epoch_val_loss,
         )
+
+        plt.plot(training_losses, label="Training Loss")
+        plt.plot(val_losses, label="Validation Loss")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.legend()
