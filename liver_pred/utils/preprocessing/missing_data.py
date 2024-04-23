@@ -4,7 +4,7 @@ import utils.config as config
 
 if not config.utils_dir / "ref_ranges.csv":
     print("No reference range file found, upload using SQL query")
-ref_ranges = pd.read_csv(config.utils_dir / "ref_ranges.csv")
+ref_ranges = pd.read_csv(config.utils_dir / "preprocessing/ref_ranges.csv")
 
 
 def process_ref_ranges(ref_ranges):
