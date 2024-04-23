@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from utils.colonflag.feature_generation import generate_features
+from utils.preprocessing.feature_generation import generate_features
 
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import StandardScaler
