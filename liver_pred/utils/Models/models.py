@@ -9,7 +9,7 @@ from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler
 import pandas as pd
 from utils.config import data_dir
 from torchvision import transforms
-
+from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 
