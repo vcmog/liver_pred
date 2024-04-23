@@ -90,7 +90,7 @@ def prepare_features(
 
 models = {
     "LR": LogisticRegression(max_iter=1000, solver="saga"),
-    "RF": RandomForestClassifier(class_weight=class_weights, n_jobs=-1),
+    "RF": RandomForestClassifier(n_jobs=-1),  # class_weight=class_weights,
     "GB": GradientBoostingClassifier(),
     "NN": MLPClassifier(),
     "SVM": SVC(probability=True),
