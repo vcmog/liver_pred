@@ -86,3 +86,25 @@ def prepare_features(
     X_test_scaled = X_test_scaled.fillna(0, inplace=False)
     X_test_scaled = X_test_scaled.set_axis(X_train.columns, axis=1)
     return X_train_scaled, X_test_scaled, y_train, y_test
+
+
+models = {
+    "LR": LogisticRegression(max_iter=1000, solver="saga"),
+    "RF": RandomForestClassifier(class_weight=class_weights, n_jobs=-1),
+    "GB": GradientBoostingClassifier(),
+    "NN": MLPClassifier(),
+    "SVM": SVC(probability=True),
+}
+
+
+def tune_hyperparameters(
+    model, param_grid, X_train, y_train, save_result=False, model_dir=None
+):
+    print(f"Running {model}")
+    clf = GridSearchCV(model, param_grid, cv=5, n_jobs=-1, scoring="average_precision")
+    clf.fit(X_train, y_train)
+    if save_result:
+        joblib.dump(clf, model_dir / r"\bestparams_" + f"{model}.pkl")
+    y_pred = clf.predict(X_train)
+    y_prob = clf.predict_proba(X_train)[:, 1]
+    return y_pred, y_prob, clf
