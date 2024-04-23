@@ -1,278 +1,88 @@
+# general
 import pandas as pd
 import numpy as np
-import torch
-
-torch.set_default_dtype(torch.float32)
-import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler
-import pandas as pd
-from utils.config import data_dir
-from torchvision import transforms
-from tqdm import tqdm
 import matplotlib.pyplot as plt
 
+# my packaes
+import utils.preprocessing.feature_generation as fg
+import utils.preprocessing.missing_data as md
 
-class OneD_Dataset(Dataset):
-    def __init__(self, file_path, labels_file_path):
-        self.data = np.load(file_path)
-        self.labels = np.load(labels_file_path)
-        self.dtype = torch.float32
+# data preparation
+from sklearn.model_selection import train_test_split
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, idx):
-        sample = self.data[idx]
-        # Assuming you have labels for each sample
-        label = self.labels[idx]  # You should adjust this to fetch labels if available
-        label = torch.tensor([label], dtype=self.dtype)
-        sample = torch.tensor(sample, dtype=self.dtype)
-
-        return sample, label
+# models
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 
 
-class RNNDataset(Dataset):
-    def __init__(self, file_path, labels_file_path):
-        self.data = np.load(file_path)
-        self.labels = np.load(labels_file_path)
-        self.dtype = torch.float32
+# evaluation
+import sklearn.metrics as metrics
+from sklearn.model_selection import GridSearchCV
 
-    def __len__(self):
-        return len(self.data)
+# confusion_matrix, ConfusionMatrixDisplay,roc_auc_score, average_precision_score, f1_score, classification_report, precision_score, recall_score, roc_curve
+from sklearn.model_selection import cross_validate
+from sklearn.utils import resample
 
-    def __getitem__(self, idx):
-        sample = self.data[idx]
-        # Assuming you have labels for each sample
-        label = self.labels[idx]  # You should adjust this to fetch labels if available
-        label = torch.tensor([label], dtype=self.dtype)
-        sample = torch.tensor(sample, dtype=self.dtype)
-        # sample = torch.unsqueeze(sample, dim=0)
+# utils
+import joblib
+from sys import getsizeof
 
-        return sample, label
+# from scipy.stats import linregress
 
 
-class onedCNN(nn.Module):
-    def __init__(self):
-        super(onedCNN, self).__init__()
-        # Define your convolutional layers
-        self.conv1 = nn.Conv1d(in_channels=45, out_channels=90, kernel_size=3)
-        # (input_size - kernel_size + 2*padding)/stride + 1
-        # for 54 features: 108
-        self.conv2 = nn.Conv1d(
-            in_channels=90, out_channels=180, kernel_size=3, padding=1
-        )
-        # for 54 features: 216
-        self.conv3 = nn.Conv1d(
-            in_channels=180, out_channels=180, kernel_size=3, padding=1
-        )
-        # for 54 features: 216
-        self.conv4 = nn.Conv1d(
-            in_channels=180, out_channels=360, kernel_size=2, padding=1
-        )
-        # Define your fully connected layers
-
-        self.fc1 = nn.Linear(360 * 7, 64)
-        self.fc2 = nn.Linear(64, 1)  # Assuming you have 2 classes
-
-        self.dropout = nn.Dropout(0.6)
-
-    def forward(self, x):
-        # Input x has shape (batch_size, channels, height, width)
-        x = self.conv1(x)
-        x = nn.functional.relu(x)
-        x = nn.functional.max_pool1d(x, kernel_size=2, stride=2)
-
-        x = self.conv2(x)
-        x = nn.functional.relu(x)
-        x = nn.functional.max_pool1d(x, kernel_size=2, stride=2)
-
-        x = self.conv3(x)
-        x = nn.functional.relu(x)
-        x = nn.functional.max_pool1d(x, kernel_size=2, stride=2)
-
-        x = self.conv4(x)
-        x = nn.functional.relu(x)
-        x = nn.functional.max_pool1d(x, kernel_size=1, stride=2)
-
-        # Flatten the output for the fully connected layers
-        x = x.view(x.size(0), -1)  # x.size(0) is the batch size
-
-        x = self.dropout(x)
-        x = self.fc1(x)
-        x = nn.functional.relu(x)
-        x = self.dropout(x)
-        x = self.fc2(x)
-        return x
-
-
-class MV_LSTM(torch.nn.Module):
-    def __init__(self, n_features, seq_length, nhidden):
-        super(MV_LSTM, self).__init__()
-        self.n_features = n_features
-        self.seq_len = seq_length
-        self.n_hidden = nhidden  # number of hidden states
-        self.n_layers = 3  # number of LSTM layers (stacked)
-        self.dropout = torch.nn.Dropout(0.2)
-
-        self.l_lstm = torch.nn.LSTM(
-            input_size=n_features,
-            hidden_size=self.n_hidden,
-            num_layers=self.n_layers,
-            batch_first=True,
-        )
-        self.l_linear1 = torch.nn.Linear(
-            self.n_hidden * self.seq_len, self.n_hidden * self.seq_len
-        )
-        self.l_linear2 = torch.nn.Linear(self.n_hidden * self.seq_len, 1)
-        self.activation = torch.nn.Sigmoid()
-
-    def forward(self, x):
-        batch_size, seq_len, _ = x.size()
-        hidden_state = torch.zeros(self.n_layers, batch_size, self.n_hidden)
-        cell_state = torch.zeros(self.n_layers, batch_size, self.n_hidden)
-        hidden = (hidden_state, cell_state)
-        lstm_out, self.hidden = self.l_lstm(x, hidden)
-
-        x = lstm_out.contiguous().view(batch_size, -1)
-        x = self.dropout(x)
-        x = self.l_linear1(x)
-        # self.activation(x)
-        x = self.dropout(x)
-        x = self.l_linear2(x)
-
-        return x
-
-
-def initialise_dataloaders(dataset, batch_size, shuffle=True, num_workers=0):
-
-    # Split the dataset indices into training and testing sets
-    train_size = int(0.7 * len(dataset))  # 80% for training, adjust ratio as needed
-    test_size = int(0.2 * len(dataset))  # 20% for testing, adjust ratio as needed
-    val_size = len(dataset) - (
-        train_size + test_size
-    )  # 10% of the training data for validation
-    train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(
-        dataset, [train_size, val_size, test_size]
-    )
-
-    # Create separate DataLoaders for training and testing
-    train_dataloader = DataLoader(
-        train_dataset,
-        batch_size=batch_size,
-        shuffle=shuffle,
-        num_workers=num_workers,
-    )
-    test_dataloader = DataLoader(
-        test_dataset,
-        batch_size=batch_size,
-        shuffle=shuffle,
-        num_workers=num_workers,
-    )
-    val_dataloader = DataLoader(
-        val_dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers
-    )
-    # Compute the mean and standard deviation of the dataset
-    mean_sum = 0.0
-    std_sum = 0.0
-    total_samples = 0
-
-    for data, _ in train_dataloader:
-        total_samples += data.size(0)
-        mean_sum += data.mean(
-            dim=(0, 1)
-        )  # Calculate mean along batch (0), width (2), and height (3) axes
-        std_sum += torch.std(
-            data, dim=(0, 1)
-        )  # Calculate std along batch (0), width (2), and height (3) axes
-    mean = mean_sum / total_samples
-    std = std_sum / total_samples
-
-    custom_transform = transforms.Compose(
-        [
-            transforms.ToTensor(),  # Convert data to PyTorch tensor
-            # nan,  # Handle NaN values
-            transforms.Normalize(
-                mean=[mean], std=[std]
-            ),  # Normalize data using computed mean and std
-        ]
-    )
-    train_dataloader.transform = custom_transform
-    test_dataloader.transform = custom_transform
-    val_dataloader.transform = custom_transform
-    return train_dataloader, test_dataloader, val_dataloader
-
-
-def train_model(
-    model,
-    train_dataloader,
-    val_dataloader,
-    num_epochs=10,
-    lr=0.001,
-    pos_class_weight=None,
+def prepare_features(
+    feature_df,
+    fill_na=True,
+    sparse_col_threshold=None,
+    scale=True,
+    test_size=0.2,
+    random_state=42,
 ):
-    # Initialize your CNN
+    """
+    Prepare features for training and testing a machine learning model. Scale before imputing missing values.
 
-    best_val_loss = float("inf")
+    Args:
+        feature_df (DataFrame): The input DataFrame containing the features and outcome variable.
+        fill_na (bool, optional): Whether to fill missing values with 0. Defaults to True.
+        sparse_col_threshold (float, optional): The threshold for removing sparse columns. Defaults to None.
+        scale (bool, optional): Whether to scale the features. Defaults to True.
+        test_size (float, optional): The proportion of the data to use for testing. Defaults to 0.2.
+        random_state (int, optional): The random seed for reproducibility. Defaults to 42.
 
-    # Define your loss function and optimizer
-    criterion = nn.BCEWithLogitsLoss(pos_weight=pos_class_weight, reduction="mean")
-    unweighted_criterion = nn.BCEWithLogitsLoss(reduction="mean")
-    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=1e-5)
+    Returns:
+        tuple: A tuple containing the scaled training features, scaled testing features, training outcome variable, and testing outcome variable.
+    """
 
-    training_losses = []
-    val_losses = []
+    print("Preparing Features")
 
-    # Train the model
-    for epoch in range(num_epochs):
-        # Create a progress bar
-        progress_bar = tqdm(
-            train_dataloader, desc=f"Epoch {epoch + 1}/{num_epochs}", leave=False
-        )
-        running_loss = 0.0
+    y = feature_df["outcome"]
+    X = feature_df.drop(columns=["outcome"]).set_index("subject_id")
 
-        # Iterate over the dataset
-        for inputs, labels in progress_bar:
-            optimizer.zero_grad()
-            outputs = model(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
+    if sparse_col_threshold:
+        sparse_cols = X.columns[X.isnull().mean() > sparse_col_threshold]
+        X = X.drop(columns=sparse_cols)
 
-            # Update the running loss
-            running_loss += loss.item()
+    train_size = 1 - test_size
+    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size)
+    print(
+        f"Train Length: {len(X_train)}        Train cases: {len(y_train[y_train==1])}    Proportion: {len(y_train[y_train==1])/len(y_train)*100} %"
+    )
+    print(
+        f"Test Length: {len(X_test)}          Test cases: {len(y_test[y_test==1])}       Proportion: {len(y_test[y_test==1])/len(y_test)*100} %"
+    )
 
-            # Update the progress bar with the current loss
-            progress_bar.set_postfix({"loss": running_loss / len(progress_bar)})
+    scaler = StandardScaler()
+    X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train))
+    X_train_scaled = X_train_scaled.set_axis(X_train.columns, axis=1)
 
-        # Calculate average loss for the epoch
-        epoch_loss = running_loss / len(train_dataloader)
-        training_losses.append(epoch_loss)
-        # Validation phase
-        model.eval()  # Set model to evaluation mode
-        running_val_loss = 0.0
+    if fill_na:
+        X_train_scaled = X_train_scaled.fillna(0, inplace=False)
 
-        with torch.no_grad():
-            for inputs, labels in val_dataloader:
-                outputs = model(inputs)
-                loss = unweighted_criterion(outputs, labels)
-                running_val_loss += loss.item()
-
-        # Calculate average validation loss for the epoch
-        epoch_val_loss = running_val_loss / len(val_dataloader)
-        val_losses.append(epoch_val_loss)
-        if epoch_val_loss < best_val_loss:
-            best_val_loss = epoch_val_loss
-            torch.save(model.state_dict(), data_dir / "1d_model.pth")
-
-        print(
-            f"Epoch [{epoch + 1}/{num_epochs}], Training Loss: {epoch_loss:.4f}",
-            "Validation Loss:",
-            epoch_val_loss,
-        )
-
-        plt.plot(training_losses, label="Training Loss")
-        plt.plot(val_losses, label="Validation Loss")
-        plt.xlabel("Epoch")
-        plt.ylabel("Loss")
-        plt.legend()
+    X_test_scaled = pd.DataFrame(scaler.transform(X_test))
+    X_test_scaled = X_test_scaled.fillna(0, inplace=False)
+    X_test_scaled = X_test_scaled.set_axis(X_train.columns, axis=1)
+    return X_train_scaled, X_test_scaled, y_train, y_test
