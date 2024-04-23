@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 
 # Function to compute evaluation metrics
-def evaluate_performance_torchmodel(model, dataloader):
+def evaluate_performance_torchmodel(model, dataloader, plot_results=False):
     """
     Evaluate the performance of a recurrent neural network model on a given dataset.
 
@@ -61,12 +61,73 @@ def evaluate_performance_torchmodel(model, dataloader):
     fpr, tpr, thresholds = roc_curve(true_labels, all_probabilities)
     # Calculate AUROC
     auroc = roc_auc_score(true_labels, all_probabilities)
+    average_precision = average_precision_score(true_labels, all_probabilities)
+    if plot_results:
+        # plot ROC curve
+        plt.plot(fpr, tpr)
+        plt.xlabel("False Positive Rate")
+        plt.ylabel("True Positive Rate")
+        plt.title("Receiver Operating Characteristic (ROC) Curve")
+        # plt.show()
 
-    # plot ROC curve
-    plt.plot(fpr, tpr)
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
-    plt.title("Receiver Operating Characteristic (ROC) Curve")
-    # plt.show()
-
+    results_dict = {
+        "accuracy": accuracy,
+        "precision": precision,
+        "recall": recall,
+        "conf_matrix": conf_matrix,
+        "auroc": auroc,
+        "fpr": fpr,
+        "tpr": tpr,
+        "average_precision": average_precision,
+    }
     return accuracy, precision, recall, conf_matrix, auroc
+
+
+def evaluate_performance_nontorch(y_probs, y_true, print=False, threshold=0.5):
+    """
+    Evaluate the performance of a binary classification model by calculating various metrics.
+
+    Parameters:
+    - y_probs (array-like): Predicted probabilities for the positive class.
+    - y_true (array-like): True labels for the samples.
+
+    Returns:
+    - f1 (float): F1 score.
+    - roc_auc (float): ROC AUC score.
+    - precision (float): Precision score.
+    - recall (float): Recall score.
+    """
+    y_pred = y_probs > threshold
+
+    accuracy = accuracy_score(y_true, y_pred)
+    f1 = f1_score(y_true, y_pred)
+
+    roc_auc = roc_auc_score(y_true, y_probs)
+    tpr, fpr, thresholds = roc_curve(y_true, y_probs)
+
+    precision = precision_score(y_true, y_pred)
+
+    recall = recall_score(y_true, y_pred)
+
+    average_precision = average_precision_score(y_true, y_probs)
+
+    confusion_matrix = confusion_matrix(y_true, y_pred)
+
+    if print:
+        print(f"F1 Score: {f1}")
+        print(f"ROC AUC: {roc_auc}")
+        print(f"Precision: {precision}")
+        print(f"Recall: {recall}")
+        print("Confusion Matrix:", confusion_matrix)
+
+    results_dict = {
+        "accuracy": accuracy,
+        "precision": precision,
+        "recall": recall,
+        "conf_matrix": confusion_matrix,
+        "auroc": roc_auc,
+        "fpr": fpr,
+        "tpr": tpr,
+        "average_precision": average_precision,
+    }
+    return f1, roc_auc, precision, recall
