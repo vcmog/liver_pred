@@ -21,7 +21,7 @@ from sklearn.svm import SVC
 
 # evaluation
 import sklearn.metrics as metrics
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
 # confusion_matrix, ConfusionMatrixDisplay,roc_auc_score, average_precision_score, f1_score, classification_report, precision_score, recall_score, roc_curve
 from sklearn.model_selection import cross_validate
@@ -97,9 +97,25 @@ models = {
 }
 
 
-def tune_hyperparameters(
+def tune_hyperparameters_grid(
     model, param_grid, X_train, y_train, save_result=False, model_dir=None
 ):
+    """
+    Tune hyperparameters of a model using grid search.
+
+    Args:
+        model: The model to be tuned.
+        param_grid: The parameter grid to search over.
+        X_train: The training data.
+        y_train: The target labels.
+        save_result: Whether to save the best parameters and model.
+        model_dir: The directory to save the best parameters and model.
+
+    Returns:
+        y_pred: The predicted labels on the training data.
+        y_prob: The predicted probabilities on the training data.
+        clf: The fitted grid search classifier.
+    """
     print(f"Running {model}")
     clf = GridSearchCV(model, param_grid, cv=5, n_jobs=-1, scoring="average_precision")
     clf.fit(X_train, y_train)
@@ -108,3 +124,29 @@ def tune_hyperparameters(
     y_pred = clf.predict(X_train)
     y_prob = clf.predict_proba(X_train)[:, 1]
     return y_pred, y_prob, clf
+
+
+def tune_hyperparameters_random(
+    model, dists, X_train, y_train, save_result=False, model_dir=None
+):
+    """
+    Tune hyperparameters of a machine learning model using random search.
+
+    Parameters:
+    - model: The machine learning model to tune.
+    - dists: A dictionary of parameter distributions for random search.
+    - X_train: The training data.
+    - y_train: The target labels.
+    - save_result: Whether to save the best parameters to a file (default: False).
+    - model_dir: The directory to save the best parameters file (default: None).
+
+    Returns:
+    - The best parameters found during the random search.
+
+    """
+    print(f"Running {model}")
+    clf = RandomizedSearchCV(model, dists, random_state=0)
+    clf.fit(X_train, y_train)
+    if save_result:
+        joblib.dump(clf, model_dir / r"\bestparams_" + f"{model}.pkl")
+    return clf.best_params_
