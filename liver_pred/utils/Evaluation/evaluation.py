@@ -80,7 +80,7 @@ def evaluate_performance_torchmodel(model, dataloader, plot_results=False):
         "tpr": tpr,
         "average_precision": average_precision,
     }
-    return accuracy, precision, recall, conf_matrix, auroc
+    return results_dict
 
 
 def evaluate_performance_nontorch(y_probs, y_true, print=False, threshold=0.5):
@@ -111,14 +111,14 @@ def evaluate_performance_nontorch(y_probs, y_true, print=False, threshold=0.5):
 
     average_precision = average_precision_score(y_true, y_probs)
 
-    confusion_matrix = confusion_matrix(y_true, y_pred)
+    conf_mat = confusion_matrix(y_true, y_pred)
 
     if print:
         print(f"F1 Score: {f1}")
         print(f"ROC AUC: {roc_auc}")
         print(f"Precision: {precision}")
         print(f"Recall: {recall}")
-        print("Confusion Matrix:", confusion_matrix)
+        print("Confusion Matrix:", conf_mat)
 
     results_dict = {
         "accuracy": accuracy,
@@ -130,4 +130,4 @@ def evaluate_performance_nontorch(y_probs, y_true, print=False, threshold=0.5):
         "tpr": tpr,
         "average_precision": average_precision,
     }
-    return f1, roc_auc, precision, recall
+    return results_dict
