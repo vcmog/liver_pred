@@ -69,24 +69,35 @@ def prepare_features(
     if test_size:
         train_size = 1 - test_size
         X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size)
-    print(
-        f"Train Length: {len(X_train)}        Train cases: {len(y_train[y_train==1])}    Proportion: {len(y_train[y_train==1])/len(y_train)*100} %"
-    )
-    print(
-        f"Test Length: {len(X_test)}          Test cases: {len(y_test[y_test==1])}       Proportion: {len(y_test[y_test==1])/len(y_test)*100} %"
-    )
 
-    scaler = StandardScaler()
-    X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train))
-    X_train_scaled = X_train_scaled.set_axis(X_train.columns, axis=1)
+        print(
+            f"Train Length: {len(X_train)}        Train cases: {len(y_train[y_train==1])}    Proportion: {len(y_train[y_train==1])/len(y_train)*100} %"
+        )
+        print(
+            f"Test Length: {len(X_test)}          Test cases: {len(y_test[y_test==1])}       Proportion: {len(y_test[y_test==1])/len(y_test)*100} %"
+        )
 
-    if fill_na:
-        X_train_scaled = X_train_scaled.fillna(0, inplace=False)
+        scaler = StandardScaler()
+        X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train))
+        X_train_scaled = X_train_scaled.set_axis(X_train.columns, axis=1)
 
-    X_test_scaled = pd.DataFrame(scaler.transform(X_test))
-    X_test_scaled = X_test_scaled.fillna(0, inplace=False)
-    X_test_scaled = X_test_scaled.set_axis(X_train.columns, axis=1)
-    return X_train_scaled, X_test_scaled, y_train, y_test
+        if fill_na:
+            X_train_scaled = X_train_scaled.fillna(0, inplace=False)
+
+        X_test_scaled = pd.DataFrame(scaler.transform(X_test))
+        X_test_scaled = X_test_scaled.fillna(0, inplace=False)
+        X_test_scaled = X_test_scaled.set_axis(X_train.columns, axis=1)
+
+        return X_train_scaled, X_test_scaled, y_train, y_test
+    else:
+        scaler = StandardScaler()
+        X_scaled = pd.DataFrame(scaler.fit_transform(X))
+        X_scaled = X_scaled.set_axis(X.columns, axis=1)
+
+        if fill_na:
+            X_scaled = X_scaled.fillna(0, inplace=False)
+
+        return X_scaled, y
 
 
 models = {
