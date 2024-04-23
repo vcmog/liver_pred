@@ -183,3 +183,21 @@ def fill_nas_normal(df):
                 except IndexError:
                     print("Error filling:", col)
     return df
+
+
+def remove_sparse_cols(lab_df, threshold=0.8):
+    """
+    Remove sparse columns from a given DataFrame based on a threshold.
+
+    Parameters:
+    lab_df (DataFrame): The raw input DataFrame containing the data.
+    threshold (float, optional): The threshold value for determining sparsity. Defaults to 0.8.
+
+    Returns:
+    DataFrame: The DataFrame with sparse columns removed.
+    """
+    counts = lab_df[["subject_id", "label"]].groupby(["label"], observed=True).nunique()
+    threshod = lab_df["subject_id"].nunique() * threshold
+    sparse_cols = counts[counts["subject_id"] < threshod].index
+    lab_df = lab_df[~lab_df["label"].isin(sparse_cols)]
+    return lab_df
