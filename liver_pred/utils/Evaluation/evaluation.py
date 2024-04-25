@@ -76,8 +76,6 @@ def evaluate_performance_torchmodel(model, dataloader, plot_results=False):
         "recall": recall,
         "conf_matrix": conf_matrix,
         "auroc": auroc,
-        "fpr": fpr,
-        "tpr": tpr,
         "average_precision": average_precision,
     }
     return results_dict
@@ -124,10 +122,8 @@ def evaluate_performance_nontorch(y_probs, y_true, print=False, threshold=0.5):
         "accuracy": accuracy,
         "precision": precision,
         "recall": recall,
-        "conf_matrix": confusion_matrix,
+        "conf_matrix": conf_mat,
         "auroc": roc_auc,
-        "fpr": fpr,
-        "tpr": tpr,
         "average_precision": average_precision,
     }
     return results_dict
