@@ -405,17 +405,17 @@ def create_array_for_CNN(processed_labs, lead_time=0, max_history=None):
 
     Args:
         processed_labs (DataFrame): Processed laboratory measurements.
-        current_window_postindex (int): Current window post index.
+        lead_time (int, optional): Lead time in days. Defaults to 0.
         max_history (int, optional): Maximum history to consider. Defaults to None.
 
     Returns:
         array_3d (ndarray): 3D array with dimensions (subject_id, blood_test_label, difference).
+        outcome (Series): Series containing the outcome for each subject.
 
     """
     binned_df = bin_measurements(processed_labs)
-    # outcome = processed_labs[["subject_id", "outcome"]].drop_duplicates()
     binned_df["weekly_differences"] = round(binned_df["differences"] // 7, 0)
-    binned_df = binned_df[binned_df["weekly_differences"] > lead_time]
+    binned_df = binned_df[binned_df["weekly_differences"] > lead_time / 7]
     if max_history:
         binned_df = binned_df[binned_df["weekly_differences"] < max_history]
 
@@ -437,18 +437,14 @@ def create_array_for_CNN(processed_labs, lead_time=0, max_history=None):
     )
     pivot_df = pivot_df.fillna(0)
 
-    # Get all possible differences and blood test labels
     all_differences = range(0, int(max(binned_df["weekly_differences"])) + 1)
 
-    # Create a MultiIndex with all possible combinations of difference and subject_id
     multiindex = pd.MultiIndex.from_product(
         [pivot_df.index.levels[0], all_differences], names=["subject_id", "differences"]
     )
 
-    # Reindex the pivot table to ensure all combinations are present, filling missing values with NaN
     pivot_df = pivot_df.reindex(multiindex)
 
-    # 3d array with dimensions (subject_id, blood_test_label, difference)
     array_3d = pivot_df.values.reshape(
         (-1, len(pivot_df.columns), len(pivot_df.index.levels[1]))
     )
@@ -465,8 +461,8 @@ def create_array_for_RNN(
 
     Args:
         processed_labs (DataFrame): The processed labs data.
-        lead_time (int, optional): The minimum time difference between index_date and charttime. Defaults to 0.
-        max_history (int, optional): The maximum time difference between index_date and charttime. Defaults to None.
+        lead_time (int, optional): The minimum time difference in days between index_date and charttime. Defaults to 0.
+        max_history (int, optional): The maximum time difference in days between index_date and charttime. Defaults to None.
         pad (bool, optional): Whether to pad the input sequences. Defaults to True.
 
     Returns:
@@ -480,20 +476,22 @@ def create_array_for_RNN(
     processed_labs["differences"] = (
         processed_labs["index_date"] - processed_labs["charttime"]
     )
+
     processed_labs["differences"] = (
         processed_labs["differences"] / np.timedelta64(1, "D")
     ).astype(int)
-    processed_labs = processed_labs[processed_labs["differences"] > lead_time]
-    if max_history:
-        processed_labs = processed_labs[processed_labs["differences"] < max_history]
 
-    df = processed_labs.sort_values(["subject_id", "charttime"])
-    df["time_diff"] = df.groupby("subject_id")[
+    processed_labs = processed_labs.loc[processed_labs["differences"] > lead_time]
+    if max_history:
+        processed_labs = processed_labs.loc[processed_labs["differences"] < max_history]
+
+    processed_labs.sort_values(["subject_id", "charttime"], inplace=True)
+    processed_labs["time_diff"] = processed_labs.groupby("subject_id")[
         "charttime"
     ].diff().dt.total_seconds().fillna(0) / np.timedelta64(1, "D").astype(int)
-    time_diff = df[["subject_id", "charttime", "time_diff"]]
+    time_diff = processed_labs[["subject_id", "charttime", "time_diff"]]
     time_diff = time_diff.groupby(["subject_id", "charttime"]).mean()
-    pivoted_df = df[["subject_id", "charttime", "label", "valuenum"]].pivot_table(
+    pivoted_df = processed_labs.pivot_table(
         index=["subject_id", "charttime"], columns="label", values="valuenum"
     )
 
