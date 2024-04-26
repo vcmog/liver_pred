@@ -36,8 +36,12 @@ model_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\P
 lead_time = 0
 max_history = 365 * 2
 nhidden = 3
-experiment_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\outputs\leadtime=0"
-output_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\outputs\lead_time_experiment_results"
+experiment_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\outputs\leadtime={}".format(
+    lead_time
+)
+output_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\outputs\leadtime_experiment_CVresults\leadtime={}".format(
+    lead_time
+)
 
 # Load Data
 cohort_ids = pd.read_csv(dir + r"\matched_cohort_ids.csv", index_col=0)
