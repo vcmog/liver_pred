@@ -333,8 +333,8 @@ def generate_features(
     processed_labs,
     cohort_ids,
     lead_time=0,
-    current_window_preindex=0,
-    current_window_postindex=0,
+    current_window_preindex=3,
+    current_window_postindex=1,
     historical_window=0,
     proximal=config.proximal_timepoint,
     distal=config.distal_timepoint,
@@ -359,7 +359,6 @@ def generate_features(
         n_days_pre=current_window_preindex,
         n_days_post=current_window_postindex,
     )
-
     outcome = current_labs["outcome"]
 
     # Fill missing values in the current_labs dataframe
@@ -450,7 +449,7 @@ def create_array_for_CNN(processed_labs, lead_time=0, max_history=None):
     )
     array_3d = np.nan_to_num(array_3d)
 
-    return array_3d, outcome
+    return array_3d, outcome.values.flatten()
 
 
 def create_array_for_RNN(
