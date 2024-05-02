@@ -37,22 +37,20 @@ model_dir = config.data_dir / "models"
 # model_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\data\models"
 
 # Experiment Settings
-lead_time = 0
+lead_time = 4
 max_history = 365 * 2
 nhidden = 3
+run_feature_eng = True
+run_rnn = True
+run_cnn = True
 
 experiment_dir = config.output_dir / "leadtime={}weeks".format(lead_time)
-# experiment_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\outputs\leadtime={}weeks".format(
-#    lead_time
-# )
+
 output_dir = (
     config.output_dir
     / "leadtime_experiment_CVresults"
     / "leadtime={}weeks".format(lead_time)
 )
-# output_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\outputs\leadtime_experiment_CVresults\leadtime={}weeks".format(
-#    lead_time
-# )
 
 # Load Data
 cohort_ids = pd.read_csv(dir / "matched_cohort_ids.csv", index_col=0)
@@ -336,19 +334,25 @@ def run_CNN_model(processed_labs, lead_time=0, max_history=max_history, k_folds=
 
 
 # Get feature dfs
-# feature_dfs = fg.generate_features(
-#    processed_labs,
-#    cohort_ids,
-#    lead_time=lead_time,
-#    current_window_preindex=7,
-#    current_window_postindex=1,
-# )
+feature_dfs = fg.generate_features(
+    processed_labs,
+    cohort_ids,
+    lead_time=lead_time,
+    current_window_preindex=7,
+    current_window_postindex=1,
+)
 
 # Run Models
-# run_FEng_model(feature_dfs, mode="current+trend")
-# run_FEng_model(feature_dfs, mode="trend")
-# run_FEng_model(feature_dfs, mode="current")
+if run_feature_eng == True:
+    run_FEng_model(feature_dfs, mode="current+trend")
+    run_FEng_model(feature_dfs, mode="trend")
+    run_FEng_model(feature_dfs, mode="current")
+if run_rnn == True:
+    run_RNN_model(
+        processed_labs, lead_time=lead_time, max_history=max_history, k_folds=5
+    )
 
-# run_RNN_model(processed_labs, lead_time=lead_time, max_history=max_history, k_folds=5)
-
-run_CNN_model(processed_labs, lead_time=lead_time, max_history=max_history, k_folds=5)
+if run_cnn == True:
+    run_CNN_model(
+        processed_labs, lead_time=lead_time, max_history=max_history, k_folds=5
+    )
