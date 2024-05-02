@@ -124,12 +124,12 @@ def current_bloods_df(lab_df, lead_time=0, n_days_pre=7, n_days_post=1):
     )
     # TO DO: add line to add back other subject_ids who have no values - or not?
 
-    check_and_add_columns(current, find_variables(lab_df))
+    # check_and_add_columns(current, find_variables(lab_df))
 
     # Add rows for unique_ids not already in the index of current
-    missing_ids = list(set(unique_ids["subject_id"]) - set(current.index))
-    missing_data = pd.DataFrame(index=missing_ids, columns=current.columns)
-    current = pd.concat([current, missing_data])
+    # missing_ids = list(set(unique_ids["subject_id"]) - set(current.index))
+    # missing_data = pd.DataFrame(index=missing_ids, columns=current.columns)
+    # current = pd.concat([current, missing_data])
 
     current["outcome"] = unique_ids.set_index("subject_id").loc[current.index][
         "outcome"
