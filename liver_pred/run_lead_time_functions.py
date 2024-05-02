@@ -28,25 +28,36 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 import pickle
 from pathlib import Path
+import utils.config as config
 
-dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\data\interim"
-model_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\data\models"
+
+dir = config.data_dir / "interim"
+# dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\data\interim"
+model_dir = config.data_dir / "models"
+# model_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\data\models"
 
 # Experiment Settings
 lead_time = 0
 max_history = 365 * 2
 nhidden = 3
-experiment_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\outputs\leadtime={}".format(
-    lead_time
+
+experiment_dir = config.output_dir / "leadtime={}weeks".format(lead_time)
+# experiment_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\outputs\leadtime={}weeks".format(
+#    lead_time
+# )
+output_dir = (
+    config.output_dir
+    / "leadtime_experiment_CVresults"
+    / "leadtime={}weeks".format(lead_time)
 )
-output_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\outputs\leadtime_experiment_CVresults\leadtime={}".format(
-    lead_time
-)
+# output_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\outputs\leadtime_experiment_CVresults\leadtime={}weeks".format(
+#    lead_time
+# )
 
 # Load Data
-cohort_ids = pd.read_csv(dir + r"\matched_cohort_ids.csv", index_col=0)
+cohort_ids = pd.read_csv(dir / "matched_cohort_ids.csv", index_col=0)
 processed_labs = pd.read_csv(
-    dir + r"\processed_lab_data.csv",
+    dir / "processed_lab_data.csv",
     parse_dates=["charttime", "index_date"],
     index_col=0,
 )
@@ -104,7 +115,7 @@ def run_FEng_model(feature_dfs, lead_time=0, mode="current+trend"):
         # Load model
         print("Loading model...")
         current_trend_model = joblib.load(
-            experiment_dir + r"\{}_nnmodel.pkl".format(mode)
+            experiment_dir / "{}_nnmodel.pkl".format(mode)
         )
 
         # Fit model
@@ -126,7 +137,7 @@ def run_FEng_model(feature_dfs, lead_time=0, mode="current+trend"):
     # Save cross-validation results
     cv_results_df = pd.DataFrame(cv_results_test)
 
-    cv_results_df.to_csv(output_dir + r"\{}_cv_results.csv".format(mode), index=False)
+    cv_results_df.to_csv(output_dir / "{}_cv_results.csv".format(mode), index=False)
 
     print("'{}' Model Complete.".format(mode))
 
@@ -137,11 +148,11 @@ def run_RNN_model(processed_labs, lead_time=0, max_history=max_history, k_folds=
         processed_labs, lead_time=lead_time, max_history=max_history
     )
 
-    np.save(dir + "rnn_input.npy", rnn_input)
-    np.save(dir + "rnn_output.npy", y.flatten())
+    np.save(dir / "rnn_input.npy", rnn_input)
+    np.save(dir / "rnn_output.npy", y.flatten())
     print("files saved successfully.")
 
-    dataset = pytorch_models.RNNDataset(dir + "rnn_input.npy", dir + "rnn_output.npy")
+    dataset = pytorch_models.RNNDataset(dir / "rnn_input.npy", dir / "rnn_output.npy")
     n_features = rnn_input.shape[2]
     seq_length = rnn_input.shape[1]
 
@@ -153,7 +164,7 @@ def run_RNN_model(processed_labs, lead_time=0, max_history=max_history, k_folds=
 
     cv_results_train = []
     cv_results_test = []
-    for fold, (train_idx, test_idx) in enumerate(kf.split(dataset)):
+    for fold, (train_idx, test_idx) in enumerate(kf.split(dataset, dataset.labels)):
         print(f"Fold {fold + 1}")
         print("-------")
 
@@ -164,9 +175,9 @@ def run_RNN_model(processed_labs, lead_time=0, max_history=max_history, k_folds=
         val_dataset = torch.utils.data.Subset(dataset, val_idx)
         test_dataset = torch.utils.data.Subset(dataset, test_idx)
 
-        train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-        val_loader = DataLoader(val_dataset, batch_size=32, shuffle=True)
-        test_loader = DataLoader(test_dataset, batch_size=32, shuffle=True)
+        train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+        val_loader = DataLoader(val_dataset, batch_size=64, shuffle=True)
+        test_loader = DataLoader(test_dataset, batch_size=64, shuffle=True)
 
         # Compute the mean and standard deviation of the dataset
         mean_sum = 0.0
@@ -197,7 +208,7 @@ def run_RNN_model(processed_labs, lead_time=0, max_history=max_history, k_folds=
         val_loader.transform = custom_transform
 
         # Load model
-        model = pytorch_models.RNN(
+        model = pytorch_models.MV_LSTM(
             n_features=n_features, seq_length=seq_length, nhidden=nhidden
         )
 
@@ -209,7 +220,7 @@ def run_RNN_model(processed_labs, lead_time=0, max_history=max_history, k_folds=
             100,
             lr=0.01,
             pos_class_weight=class_weights[0],
-            save_dir=None,
+            save_dir=output_dir,
         )
 
         train_results = evaluation.evaluate_performance_torchmodel(model, train_loader)
@@ -224,21 +235,23 @@ def run_RNN_model(processed_labs, lead_time=0, max_history=max_history, k_folds=
 
     # Save cross-validation results
     cv_results_df = pd.DataFrame(cv_results_test)
-    cv_results_df.to_csv(output_dir + r"\rnn_cv_results.csv", index=False)
+    cv_results_df.to_csv(output_dir / "rnn_cv_results.csv", index=False)
 
     print("RNN Model Complete.")
 
 
 def run_CNN_model(processed_labs, lead_time=0, max_history=max_history, k_folds=5):
     cnn_input, y = fg.create_array_for_CNN(
-        processed_labs, lead_time=lead_time, max_history=max_history
+        processed_labs, lead_time=-lead_time, max_history=max_history // 7
     )
+    n_features = cnn_input.shape[1]
+    seq_len = cnn_input.shape[2]
 
-    np.save(dir + "cnn_input.npy", cnn_input)
-    np.save(dir + "cnn_output.npy", y.flatten())
+    np.save(dir / "cnn_input.npy", cnn_input)
+    np.save(dir / "cnn_output.npy", y.flatten())
     print("files saved successfully.")
 
-    dataset = pytorch_models.OneD_Dataset(dir + "cnn_input.npy", dir + "cnn_output.npy")
+    dataset = pytorch_models.OneD_Dataset(dir / "cnn_input.npy", dir / "cnn_output.npy")
 
     class_weights = torch.tensor(
         [len(y) / (2 * sum(y == 1)), len(y) / (2 * sum(y == 0))]
@@ -248,7 +261,7 @@ def run_CNN_model(processed_labs, lead_time=0, max_history=max_history, k_folds=
 
     cv_results_train = []
     cv_results_test = []
-    for fold, (train_idx, test_idx) in enumerate(kf.split(dataset)):
+    for fold, (train_idx, test_idx) in enumerate(kf.split(dataset, dataset.labels)):
         print(f"Fold {fold + 1}")
         print("-------")
 
@@ -292,7 +305,7 @@ def run_CNN_model(processed_labs, lead_time=0, max_history=max_history, k_folds=
         val_loader.transform = custom_transform
 
         # Load model
-        model = pytorch_models.onedCNN()
+        model = pytorch_models.onedCNN(n_features=n_features, seq_len=seq_len)
 
         # Train model
         pytorch_models.train_model(
@@ -302,7 +315,7 @@ def run_CNN_model(processed_labs, lead_time=0, max_history=max_history, k_folds=
             100,
             lr=0.0001,
             pos_class_weight=class_weights[0],
-            save_dir=None,
+            save_dir=output_dir,
         )
 
         train_results = evaluation.evaluate_performance_torchmodel(model, train_loader)
@@ -317,22 +330,25 @@ def run_CNN_model(processed_labs, lead_time=0, max_history=max_history, k_folds=
 
     # Save cross-validation results
     cv_results_df = pd.DataFrame(cv_results_test)
-    cv_results_df.to_csv(output_dir + r"\cnn_cv_results.csv", index=False)
+    cv_results_df.to_csv(output_dir / "cnn_cv_results.csv", index=False)
 
     print("CNN Model Complete.")
 
 
 # Get feature dfs
-feature_dfs = fg.generate_features(
-    processed_labs, lead_time=lead_time, max_history=max_history
-)
-
+# feature_dfs = fg.generate_features(
+#    processed_labs,
+#    cohort_ids,
+#    lead_time=lead_time,
+#    current_window_preindex=7,
+#    current_window_postindex=1,
+# )
 
 # Run Models
-run_FEng_model(feature_dfs, mode="current+trend")
-run_FEng_model(feature_dfs, mode="trend")
-run_FEng_model(feature_dfs, mode="current")
+# run_FEng_model(feature_dfs, mode="current+trend")
+# run_FEng_model(feature_dfs, mode="trend")
+# run_FEng_model(feature_dfs, mode="current")
 
-run_RNN_model(processed_labs, lead_time=lead_time, max_history=max_history, k_folds=5)
+# run_RNN_model(processed_labs, lead_time=lead_time, max_history=max_history, k_folds=5)
 
 run_CNN_model(processed_labs, lead_time=lead_time, max_history=max_history, k_folds=5)
