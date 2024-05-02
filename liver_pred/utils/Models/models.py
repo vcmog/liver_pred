@@ -102,6 +102,9 @@ def prepare_features(
 
 models = {
     "LR": LogisticRegression(max_iter=1000, solver="saga"),
+    "Elastic Net": LogisticRegression(
+        max_iter=1000, solver="saga", penalty="elasticnet"
+    ),
     "RF": RandomForestClassifier(n_jobs=-1),  # class_weight=class_weights,
     "GB": GradientBoostingClassifier(),
     "NN": MLPClassifier(),
@@ -110,7 +113,7 @@ models = {
 
 
 def tune_hyperparameters_grid(
-    model, param_grid, X_train, y_train, save_result=False, model_dir=None
+    model, param_grid, X_train, y_train, save_result=False, model_dir=None, scoring="balanced_accuracy"
 ):
     """
     Tune hyperparameters of a model using grid search.
@@ -129,7 +132,7 @@ def tune_hyperparameters_grid(
         clf: The fitted grid search classifier.
     """
     print(f"Running {model}")
-    clf = GridSearchCV(model, param_grid, cv=5, n_jobs=-1, scoring="average_precision")
+    clf = GridSearchCV(model, param_grid, cv=5, n_jobs=-1, scoring=scoring)
     clf.fit(X_train, y_train)
     if save_result:
         joblib.dump(clf, model_dir / r"\bestparams_" + f"{model}.pkl")
@@ -138,9 +141,7 @@ def tune_hyperparameters_grid(
     return y_pred, y_prob, clf
 
 
-def tune_hyperparameters_random(
-    model, dists, X_train, y_train, save_result=False, model_dir=None
-):
+def tune_hyperparameters_random(model, dists, X, y, save_result=False, model_dir=None):
     """
     Tune hyperparameters of a machine learning model using random search.
 
@@ -157,8 +158,8 @@ def tune_hyperparameters_random(
 
     """
     print(f"Running {model}")
-    clf = RandomizedSearchCV(model, dists, random_state=0)
-    clf.fit(X_train, y_train)
+    clf = RandomizedSearchCV(model, dists, random_state=0, n_iter=50)
+    clf.fit(X, y)
     if save_result:
-        joblib.dump(clf, model_dir / r"\bestparams_" + f"{model}.pkl")
+        joblib.dump(clf, model_dir / (r"bestparams_" + f"{model}.pkl"))
     return clf.best_params_
