@@ -12,6 +12,8 @@ from torchvision import transforms
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
+import utils.config as config
+
 
 class OneD_Dataset(Dataset):
     def __init__(self, file_path, labels_file_path):
@@ -53,26 +55,51 @@ class RNNDataset(Dataset):
 
 
 class onedCNN(nn.Module):
-    def __init__(self):
+    def __init__(self, n_features, seq_len):
         super(onedCNN, self).__init__()
         # Define your convolutional layers
-        self.conv1 = nn.Conv1d(in_channels=45, out_channels=90, kernel_size=3)
+        self.conv1 = nn.Conv1d(
+            in_channels=n_features, out_channels=2 * n_features, kernel_size=3
+        )
         # (input_size - kernel_size + 2*padding)/stride + 1
+        output_size = int(((seq_len - 3 + 2 * 0) / 1 + 1) // 1)
+        # maxpool layer = (input_size - kernel_size)/stride + 1
+        output_size = int(((output_size - 2 + 2 * 0) / 2 + 1) // 1)
         # for 54 features: 108
         self.conv2 = nn.Conv1d(
-            in_channels=90, out_channels=180, kernel_size=3, padding=1
+            in_channels=2 * n_features,
+            out_channels=4 * n_features,
+            kernel_size=3,
+            padding=1,
         )
-        # for 54 features: 216
+        output_size = int(((output_size - 3 + 2 * 1) / 1 + 1) // 1)
+        # after max pool
+        output_size = int(((output_size - 2 + 2 * 0) / 2 + 1) // 1)
         self.conv3 = nn.Conv1d(
-            in_channels=180, out_channels=180, kernel_size=3, padding=1
+            in_channels=4 * n_features,
+            out_channels=4 * n_features,
+            kernel_size=3,
+            padding=1,
         )
+
+        output_size = int(((output_size - 3 + 2 * 1) / 1 + 1) // 1)
+        # after max pool
+        output_size = int(((output_size - 2 + 2 * 0) / 2 + 1) // 1)
         # for 54 features: 216
         self.conv4 = nn.Conv1d(
-            in_channels=180, out_channels=360, kernel_size=2, padding=1
+            in_channels=4 * n_features,
+            out_channels=8 * n_features,
+            kernel_size=2,
+            padding=1,
         )
-        # Define your fully connected layers
+        output_size = int(((output_size - 2 + 2 * 1) / 1 + 1) // 1)
+        # after max pool
+        output_size = int(((output_size - 1 + 2 * 0) / 2 + 1) // 1)
 
-        self.fc1 = nn.Linear(360 * 7, 64)
+        # Define your fully connected layers
+        fclayer_input = output_size * 8 * n_features
+
+        self.fc1 = nn.Linear(fclayer_input, 64)
         self.fc2 = nn.Linear(64, 1)  # Assuming you have 2 classes
 
         self.dropout = nn.Dropout(0.6)
@@ -104,6 +131,24 @@ class onedCNN(nn.Module):
         x = self.dropout(x)
         x = self.fc2(x)
         return x
+
+
+class EarlyStopper:
+    def __init__(self, patience=10, min_delta=0):
+        self.patience = patience
+        self.min_delta = min_delta
+        self.counter = 0
+        self.min_validation_loss = float("inf")
+
+    def early_stop(self, validation_loss):
+        if validation_loss < self.min_validation_loss:
+            self.min_validation_loss = validation_loss
+            self.counter = 0
+        elif validation_loss > (self.min_validation_loss + self.min_delta):
+            self.counter += 1
+            if self.counter >= self.patience:
+                return True
+        return False
 
 
 class MV_LSTM(torch.nn.Module):
@@ -210,6 +255,7 @@ def train_model(
     num_epochs=10,
     lr=0.001,
     pos_class_weight=None,
+    save_dir=config.output_dir,
 ):
     # Initialize your CNN
 
@@ -222,6 +268,8 @@ def train_model(
 
     training_losses = []
     val_losses = []
+
+    early_stopper = EarlyStopper(patience=10, min_delta=0.001)
 
     # Train the model
     for epoch in range(num_epochs):
@@ -261,9 +309,13 @@ def train_model(
         # Calculate average validation loss for the epoch
         epoch_val_loss = running_val_loss / len(val_dataloader)
         val_losses.append(epoch_val_loss)
+
         if epoch_val_loss < best_val_loss:
             best_val_loss = epoch_val_loss
-            torch.save(model.state_dict(), data_dir / "1d_model.pth")
+            torch.save(model.state_dict(), save_dir / "torch_models/1d_model.pth")
+            if early_stopper.early_stop(epoch_val_loss):
+                print("Stopping at epoch {}".format(epoch + 1))
+                break
 
         print(
             f"Epoch [{epoch + 1}/{num_epochs}], Training Loss: {epoch_loss:.4f}",
@@ -271,8 +323,8 @@ def train_model(
             epoch_val_loss,
         )
 
-        plt.plot(training_losses, label="Training Loss")
-        plt.plot(val_losses, label="Validation Loss")
-        plt.xlabel("Epoch")
-        plt.ylabel("Loss")
-        plt.legend()
+    plt.plot(training_losses, label="Training Loss")
+    plt.plot(val_losses, label="Validation Loss")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.legend()
