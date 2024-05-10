@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import utils.config as config
+from .. import config
 
 if not config.utils_dir / "ref_ranges.csv":
     print("No reference range file found, upload using SQL query")
