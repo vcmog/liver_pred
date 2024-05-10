@@ -497,7 +497,7 @@ def create_array_for_RNN(
 
     # find the mean time difference for each subject_id and charttime as there are duplicates
     time_diff = processed_labs[["subject_id", "charttime", "time_diff"]]
-    time_diff = time_diff.groupby(["subject_id", "charttime"]).mean()
+    time_diff = time_diff.groupby(["subject_id", "charttime"]).max()
     # pivot the lab tests so that each variable is a column
     pivoted_df = processed_labs.pivot_table(
         index=["subject_id", "charttime"], columns="label", values="valuenum"
