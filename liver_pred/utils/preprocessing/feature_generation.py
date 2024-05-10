@@ -471,25 +471,34 @@ def create_array_for_RNN(
         None
 
     """
-
+    # find time difference between lab test and index date
     processed_labs["differences"] = (
         processed_labs["index_date"] - processed_labs["charttime"]
     )
-
+    # convert time difference to days
     processed_labs["differences"] = (
         processed_labs["differences"] / np.timedelta64(1, "D")
     ).astype(int)
 
+    # filter out lab tests that are too close to the index date
     processed_labs = processed_labs.loc[processed_labs["differences"] > lead_time]
+
+    # filter out lab tests that are too far from the index date
     if max_history:
         processed_labs = processed_labs.loc[processed_labs["differences"] < max_history]
 
+    # sort the lab tests by subject_id and charttime
     processed_labs.sort_values(["subject_id", "charttime"], inplace=True)
-    processed_labs["time_diff"] = processed_labs.groupby("subject_id")[
-        "charttime"
-    ].diff().dt.total_seconds().fillna(0) / np.timedelta64(1, "D").astype(int)
+
+    # find the time difference between each lab test
+    processed_labs["time_diff"] = (
+        processed_labs.groupby("subject_id")["charttime"].diff() / pd.Timedelta(days=1)
+    ).fillna(0)
+
+    # find the mean time difference for each subject_id and charttime as there are duplicates
     time_diff = processed_labs[["subject_id", "charttime", "time_diff"]]
     time_diff = time_diff.groupby(["subject_id", "charttime"]).mean()
+    # pivot the lab tests so that each variable is a column
     pivoted_df = processed_labs.pivot_table(
         index=["subject_id", "charttime"], columns="label", values="valuenum"
     )
