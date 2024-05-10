@@ -37,19 +37,18 @@ model_dir = config.data_dir / "models"
 # model_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\data\models"
 
 # Experiment Settings
-lead_time = 4
+lead_time = 24 * 7
 max_history = 365 * 2
 nhidden = 3
 run_feature_eng = True
 run_rnn = True
 run_cnn = True
-
-experiment_dir = config.output_dir / "leadtime={}weeks".format(lead_time)
+experiment_dir = config.output_dir / "leadtime={}weeks".format(int(lead_time / 7))
 
 output_dir = (
     config.output_dir
     / "leadtime_experiment_CVresults"
-    / "leadtime={}weeks".format(lead_time)
+    / "leadtime={}weeks".format(int(lead_time / 7))
 )
 
 # Load Data
@@ -112,9 +111,10 @@ def run_FEng_model(feature_dfs, lead_time=0, mode="current+trend"):
 
         # Load model
         print("Loading model...")
-        current_trend_model = joblib.load(
-            experiment_dir / "{}_nnmodel.pkl".format(mode)
-        )
+        if lead_time / 7 <= 24:
+            current_trend_model = joblib.load(
+                experiment_dir / "{}_nnmodel.pkl".format(mode)
+            )
 
         # Fit model
         print("Fitting model...")
@@ -344,9 +344,9 @@ feature_dfs = fg.generate_features(
 
 # Run Models
 if run_feature_eng == True:
-    run_FEng_model(feature_dfs, mode="current+trend")
-    run_FEng_model(feature_dfs, mode="trend")
-    run_FEng_model(feature_dfs, mode="current")
+    run_FEng_model(feature_dfs, lead_time=lead_time, mode="current+trend")
+    run_FEng_model(feature_dfs, lead_time=lead_time, mode="trend")
+    run_FEng_model(feature_dfs, lead_time=lead_time, mode="current")
 if run_rnn == True:
     run_RNN_model(
         processed_labs, lead_time=lead_time, max_history=max_history, k_folds=5
