@@ -2,8 +2,11 @@ import pandas as pd
 import numpy as np
 from datetime import timedelta
 from scipy.stats import linregress
-import utils.preprocessing.missing_data as md
-import utils.config as config
+import sys
+
+sys.path.append("..")  # Adds higher directory to python modules
+from . import missing_data as md
+from .. import config
 
 
 def find_variables(lab_df):
@@ -495,7 +498,7 @@ def create_array_for_RNN(
         processed_labs.groupby("subject_id")["charttime"].diff() / pd.Timedelta(days=1)
     ).fillna(0)
 
-    # find the mean time difference for each subject_id and charttime as there are duplicates
+    # find the max time difference for each subject_id and charttime where there are numerous blood tests taken at the same time - max as only first listed will have a non-zero difference
     time_diff = processed_labs[["subject_id", "charttime", "time_diff"]]
     time_diff = time_diff.groupby(["subject_id", "charttime"]).max()
 
@@ -504,6 +507,7 @@ def create_array_for_RNN(
         index=["subject_id", "charttime"], columns="label", values="valuenum"
     )
 
+    # add in time-diff columns
     pivoted_df["time_diff"] = time_diff["time_diff"]
 
     subject_data = pivoted_df.groupby(level=0).apply(lambda x: list(x.to_numpy()))
