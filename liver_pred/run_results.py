@@ -49,144 +49,103 @@ lead_times = range(0, 52, 4)
 
 precision_means = {}
 precision_stds = {}
+precision_upper = {}
+precision_lower = {}
 recall_means = {}
 recall_stds = {}
+recall_upper = {}
+recall_lower = {}
 auc_means = {}
 auc_stds = {}
+auc_upper = {}
+auc_lower = {}
 average_precision_means = {}
 average_precision_stds = {}
+average_precision_upper = {}
+average_precision_lower = {}
+
 
 # Plot the results
 for model_name in model_names:
     precision_means[model_name] = []
     precision_stds[model_name] = []
+    precision_upper[model_name] = []
+    precision_lower[model_name] = []
     recall_means[model_name] = []
     recall_stds[model_name] = []
+    recall_upper[model_name] = []
+    recall_lower[model_name] = []
     auc_means[model_name] = []
     auc_stds[model_name] = []
+    auc_upper[model_name] = []
+    auc_lower[model_name] = []
     average_precision_means[model_name] = []
     average_precision_stds[model_name] = []
+    average_precision_upper[model_name] = []
+    average_precision_lower[model_name] = []
     for lead_time in lead_times:
         lead_time_folder = experiment_dir / f"leadtime={lead_time}weeks"
         results = pd.read_csv(lead_time_folder / f"{model_name}.csv", index_col=0)
         results.drop(columns="index", inplace=True)
         precision_means[model_name].append(results["precision"].mean())
         precision_stds[model_name].append(results["precision"].std())
+        precision_upper[model_name].append(
+            results["precision"].max() - results["precision"].mean()
+        )
+        precision_lower[model_name].append(
+            results["precision"].mean() - results["precision"].min()
+        )
         recall_means[model_name].append(results["recall"].mean())
         recall_stds[model_name].append(results["recall"].std())
+        recall_upper[model_name].append(
+            results["recall"].max() - results["recall"].mean()
+        )
+        recall_lower[model_name].append(
+            results["recall"].mean() - results["recall"].min()
+        )
         auc_means[model_name].append(results["auroc"].mean())
         auc_stds[model_name].append(results["auroc"].std())
+        auc_upper[model_name].append(results["auroc"].max() - results["auroc"].mean())
+        auc_lower[model_name].append(results["auroc"].mean() - results["auroc"].min())
         average_precision_means[model_name].append(results["average_precision"].mean())
         average_precision_stds[model_name].append(results["average_precision"].std())
+        average_precision_upper[model_name].append(
+            results["average_precision"].max() - results["average_precision"].mean()
+        )
+        average_precision_lower[model_name].append(
+            results["average_precision"].mean() - results["average_precision"].min()
+        )
 
 metrics = ["precision", "recall", "auc", "average_precision"]
-plt.figure(figsize=(10, 5))
-
-for metric in metrics:
-    plt.figure(figsize=(10, 5))
-    for model_name in model_names:
-        mean_values = eval(f"{metric}_means[model_name]")
-        std_values = eval(f"{metric}_stds[model_name]")
-        plt.errorbar(lead_times, mean_values, yerr=std_values, label=model_name)
-
-    plt.legend()
-    plt.xlabel("Lead Time (weeks)")
-    plt.ylabel(metric.capitalize())  # Capitalize the metric name
-    plt.title(f"{metric.capitalize()} vs Lead Time")
-    plt.show()
-
 
 # Plot AUCs
 plt.figure(figsize=(10, 5))
-plt.errorbar(
-    lead_times,
-    auc_means["cnn_cv_results"],
-    yerr=auc_stds["cnn_cv_results"],
-    label="CNN",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    auc_means["current_cv_results"],
-    yerr=auc_stds["current_cv_results"],
-    label="Current",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    auc_means["current+trend_cv_results"],
-    yerr=auc_stds["current+trend_cv_results"],
-    label="Current + Trend",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    auc_means["rnn_cv_results"],
-    yerr=auc_stds["rnn_cv_results"],
-    label="RNN",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    auc_means["trend_cv_results"],
-    yerr=auc_stds["trend_cv_results"],
-    label="Trend",
-    elinewidth=1,
-    capsize=3,
-)
+for model_name in model_names:
+    plt.errorbar(
+        lead_times,
+        auc_means[model_name],
+        yerr=[auc_lower[model_name], auc_upper[model_name]],
+        label=model_name,
+        elinewidth=1,
+        capsize=3,
+    )
 plt.legend()
 plt.xlabel("Lead Time (weeks)")
 plt.ylabel("AUC")
 plt.title("AUC vs Lead Time")
-plt.show()
 
 
 # Plot precisions
 plt.figure(figsize=(10, 5))
-plt.errorbar(
-    lead_times,
-    precision_means["cnn_cv_results"],
-    yerr=precision_stds["cnn_cv_results"],
-    label="CNN",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    precision_means["current_cv_results"],
-    yerr=precision_stds["current_cv_results"],
-    label="Current",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    precision_means["current+trend_cv_results"],
-    yerr=precision_stds["current+trend_cv_results"],
-    label="Current + Trend",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    precision_means["rnn_cv_results"],
-    yerr=precision_stds["rnn_cv_results"],
-    label="RNN",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    precision_means["trend_cv_results"],
-    yerr=precision_stds["trend_cv_results"],
-    label="Trend",
-    elinewidth=1,
-    capsize=3,
-)
+for model_name in model_names:
+    plt.errorbar(
+        lead_times,
+        precision_means[model_name],
+        yerr=[precision_lower[model_name], precision_upper[model_name]],
+        label=model_name,
+        elinewidth=1,
+        capsize=3,
+    )
 plt.legend()
 plt.xlabel("Lead Time (weeks)")
 plt.ylabel("Precision")
@@ -195,46 +154,15 @@ plt.title("Precision vs Lead Time")
 
 # Plot recalls
 plt.figure(figsize=(10, 5))
-plt.errorbar(
-    lead_times,
-    recall_means["cnn_cv_results"],
-    yerr=recall_stds["cnn_cv_results"],
-    label="CNN",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    recall_means["current_cv_results"],
-    yerr=recall_stds["current_cv_results"],
-    label="Current",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    recall_means["current+trend_cv_results"],
-    yerr=recall_stds["current+trend_cv_results"],
-    label="Current + Trend",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    recall_means["rnn_cv_results"],
-    yerr=recall_stds["rnn_cv_results"],
-    label="RNN",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    recall_means["trend_cv_results"],
-    yerr=recall_stds["trend_cv_results"],
-    label="Trend",
-    elinewidth=1,
-    capsize=3,
-)
+for model_name in model_names:
+    plt.errorbar(
+        lead_times,
+        recall_means[model_name],
+        yerr=[recall_lower[model_name], recall_upper[model_name]],
+        label=model_name,
+        elinewidth=1,
+        capsize=3,
+    )
 plt.legend()
 plt.xlabel("Lead Time (weeks)")
 plt.ylabel("Recall")
@@ -243,46 +171,18 @@ plt.title("Recall vs Lead Time")
 
 # Plot average precisions
 plt.figure(figsize=(10, 5))
-plt.errorbar(
-    lead_times,
-    average_precision_means["cnn_cv_results"],
-    yerr=average_precision_stds["cnn_cv_results"],
-    label="CNN",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    average_precision_means["current_cv_results"],
-    yerr=average_precision_stds["current_cv_results"],
-    label="Current",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    average_precision_means["current+trend_cv_results"],
-    yerr=average_precision_stds["current+trend_cv_results"],
-    label="Current + Trend",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    average_precision_means["rnn_cv_results"],
-    yerr=average_precision_stds["rnn_cv_results"],
-    label="RNN",
-    elinewidth=1,
-    capsize=3,
-)
-plt.errorbar(
-    lead_times,
-    average_precision_means["trend_cv_results"],
-    yerr=average_precision_stds["trend_cv_results"],
-    label="Trend",
-    elinewidth=1,
-    capsize=3,
-)
+for model_name in model_names:
+    plt.errorbar(
+        lead_times,
+        average_precision_means[model_name],
+        yerr=[
+            average_precision_lower[model_name],
+            average_precision_upper[model_name],
+        ],
+        label=model_name,
+        elinewidth=1,
+        capsize=3,
+    )
 plt.legend()
 plt.xlabel("Lead Time (weeks)")
 plt.ylabel("Average Precision")
