@@ -37,12 +37,12 @@ model_dir = config.data_dir / "models"
 # model_dir = r"C:\Users\victo\OneDrive - University of Leeds\Documents\Uni Work\Project\MIMIC Work\Liver Cancer Prediction\liver_pred\data\models"
 
 # Experiment Settings
-lead_time = 24 * 7
-max_history = 365 * 2
+lead_time = 100 * 7  # n weeks in days
+max_history = 365 * 2  # full history in days
 nhidden = 3
-run_feature_eng = True
+run_feature_eng = False
 run_rnn = True
-run_cnn = True
+run_cnn = False
 experiment_dir = config.output_dir / "leadtime={}weeks".format(int(lead_time / 7))
 
 output_dir = (
@@ -115,7 +115,10 @@ def run_FEng_model(feature_dfs, lead_time=0, mode="current+trend"):
             current_trend_model = joblib.load(
                 experiment_dir / "{}_nnmodel.pkl".format(mode)
             )
-
+        else:
+            current_trend_model = joblib.load(
+                config.output_dir / "leadtime=24weeks" / "{}_nnmodel.pkl".format(mode)
+            )
         # Fit model
         print("Fitting model...")
         current_trend_model.fit(X_train, y_train)
