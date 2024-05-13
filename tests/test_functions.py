@@ -38,6 +38,44 @@ def test_rnn_feature_eng():
     )
 
 
+def test_rnn_lead_time():
+    patient1 = pd.DataFrame(
+        {
+            "subject_id": [1, 1],
+            "label": ["A", "B"],
+            "valuenum": [1.1, 1.2],
+            "outcome": [0, 0],
+            "index_date": pd.to_datetime(["2024-01-10", "2024-01-10"]),
+        }
+    )
+    patient1["charttime"] = [
+        patient1["index_date"][0] - pd.to_timedelta(1, unit="d"),
+        patient1["index_date"][0] - pd.to_timedelta(10, unit="d"),
+    ]
+    assert (
+        fg.create_array_for_RNN(patient1, lead_time=8, max_history=None)[0]
+        == np.array([[[1.2, 0]]])
+    ).all()
+
+
+def test_rnn_output():
+    patient1 = pd.DataFrame(
+        {
+            "subject_id": [1, 1, 1, 1, 1],
+            "charttime": pd.to_datetime(
+                ["2022-01-01", "2022-01-01", "2023-12-03", "2024-01-01", "2024-01-03"]
+            ),
+            "label": ["A", "B", "A", "A", "B"],
+            "valuenum": [1.1, 1.2, 1.3, 1.4, 1.5],
+            "outcome": [0, 0, 0, 0, 0],
+            "index_date": pd.to_datetime(
+                ["2024-01-10", "2024-01-10", "2024-01-10", "2024-01-10", "2024-01-10"]
+            ),
+        }
+    )
+    assert fg.create_array_for_RNN(patient1, lead_time=8, max_history=None)[1] == 0
+
+
 pytest.main()
 
 # patient2 = pd.DataFrame({'charttime': pd.to_datetime(['2006-01-01', '2002-03-03']),
