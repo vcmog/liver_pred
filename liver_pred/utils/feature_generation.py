@@ -487,13 +487,13 @@ def create_array_for_RNN(
     if max_history:
         processed_labs = processed_labs[processed_labs["differences"] < max_history]
 
-    df = processed_labs.sort_values(["subject_id", "charttime"])
+    df = processed_labs.sort_values(["subject_id", "charttime"], inplace=False)
     df["time_diff"] = df.groupby("subject_id")[
         "charttime"
     ].diff().dt.total_seconds().fillna(0) / np.timedelta64(1, "D").astype(int)
-    time_diff = df[["subject_id", "charttime", "time_diff"]]
+    time_diff = df.loc[["subject_id", "charttime", "time_diff"]]
     time_diff = time_diff.groupby(["subject_id", "charttime"]).mean()
-    pivoted_df = df[["subject_id", "charttime", "label", "valuenum"]].pivot_table(
+    pivoted_df = df.loc[["subject_id", "charttime", "label", "valuenum"]].pivot_table(
         index=["subject_id", "charttime"], columns="label", values="valuenum"
     )
 
