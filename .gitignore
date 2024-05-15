@@ -3,6 +3,7 @@
 *.png
 *.pyc
 
+
 data/
 data/*
 data/*/*.csv
@@ -11,5 +12,8 @@ liver_pred/utils/__pycache__/
 data/*/*
 data/*/*.npy
 data/interim/matched_cohort_ids.csv
-
+outputs/*/*
+*.pkl
+*.npy
+*.pth
 data/interim/labevents
