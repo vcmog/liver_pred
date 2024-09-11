@@ -113,7 +113,7 @@ if config.perform_matching:
     )
     print("Threshold tuned")
     # Find matches
-    matcher.match(nmatches=5)
+    matcher.match(nmatches=no_matches)
     print("Matching complete")
 
     # Save matched data
